@@ -199,17 +199,22 @@ onAuthStateChanged(auth, (user) => {
   }
 });
 
-// Logout button
-document.getElementById('logoutBtn').addEventListener('click', async () => {
-  try {
-    console.log('[LOGOUT] Signing out...');
-    await signOut(auth);
-    window.location.href = 'auth.html';
-  } catch (error) {
-    console.error('[LOGOUT ERROR]', error);
-    alert('Error logging out. Please try again.');
-  }
-});
+// Logout button - with safety check
+const logoutBtn = document.getElementById('logoutBtn');
+if (logoutBtn) {
+  logoutBtn.addEventListener('click', async () => {
+    try {
+      console.log('[LOGOUT] Signing out...');
+      await signOut(auth);
+      window.location.href = 'auth.html';
+    } catch (error) {
+      console.error('[LOGOUT ERROR]', error);
+      alert('Error logging out. Please try again.');
+    }
+  });
+} else {
+  console.error('[ERROR] Logout button not found in DOM');
+}
 
 // Create Campaign Modal
 const createBtn = document.getElementById('createCampaignBtn');
