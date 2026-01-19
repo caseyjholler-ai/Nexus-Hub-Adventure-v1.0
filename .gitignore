@@ -1,5 +1,4 @@
 # Firebase config (KEEP SECRET - never commit this!)
-firebase-config.js
 firebase-config.example.js
 
 # Environment variables
