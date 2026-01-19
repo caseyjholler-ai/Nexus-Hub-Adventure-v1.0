@@ -1,0 +1,50 @@
+# Firebase config (KEEP SECRET - never commit this!)
+firebase-config.js
+firebase-config.example.js
+
+# Environment variables
+.env
+.env.local
+.env.production
+
+# Node modules
+node_modules/
+package-lock.json
+yarn.lock
+
+# Build outputs
+dist/
+build/
+.vercel/
+.next/
+
+# OS files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Temporary files
+*.tmp
+*.temp
+.cache/
+
+# Testing
+coverage/
+.nyc_output/
+
+# Personal notes (optional)
+notes.md
+TODO.md

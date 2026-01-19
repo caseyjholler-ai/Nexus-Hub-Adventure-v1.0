@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Nexus Hub - Dashboard</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    /* Collapsible campaign styles */
+    .campaign-card {
+      transition: all 0.3s ease;
+      cursor: pointer;
+    }
+    
+    .campaign-card.collapsed .campaign-details {
+      display: none;
+    }
+    
+    .campaign-card.collapsed {
+      padding: 1rem;
+    }
+    
+    .campaign-details {
+      margin-top: 1rem;
+      padding-top: 1rem;
+      border-top: 1px solid rgba(0, 0, 0, 0.1);
+    }
+    
+    .collapse-icon {
+      transition: transform 0.3s ease;
+    }
+    
+    .campaign-card.collapsed .collapse-icon {
+      transform: rotate(-90deg);
+    }
+    
+    /* Copy button styles */
+    .copy-btn {
+      padding: 0.5rem 1rem;
+      background: linear-gradient(135deg, #10b981, #059669);
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: all 0.2s ease;
+      font-size: 0.875rem;
+    }
+    
+    .copy-btn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+    }
+    
+    .copy-btn:active {
+      transform: translateY(0);
+    }
+    
+    .copy-btn.copied {
+      background: linear-gradient(135deg, #3b82f6, #2563eb);
+    }
+    
+    /* No-hover button fixes */
+    .btn-primary,
+    .btn-secondary {
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    
+    .btn-primary:active {
+      transform: scale(0.98);
+    }
+    
+    .btn-secondary:active {
+      transform: scale(0.98);
+    }
+  </style>
+</head>
+<body class="bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 min-h-screen">
+
+  <!-- Navigation Header -->
+  <header class="bg-slate-900/80 backdrop-blur-sm border-b border-purple-500/30 sticky top-0 z-50">
+    <div class="container mx-auto px-4 py-4 flex justify-between items-center">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 bg-gradient-to-br from-orange-500 to-red-600 rounded-lg flex items-center justify-center text-white font-bold text-xl">N</div>
+        <h1 class="text-2xl font-bold text-purple-400">Nexus Hub Dashboard</h1>
+      </div>
+      
+      <div class="flex items-center gap-4">
+        <span id="userEmail" class="text-purple-300 text-sm">Loading...</span>
+        <button id="logoutBtn" class="px-4 py-2 bg-red-600 text-white rounded-lg transition active:scale-95">
+          Logout
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main class="container mx-auto px-4 py-8">
+    
+    <!-- User Stats -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+      <div class="card-document text-center">
+        <p class="text-sm text-gray-600 mb-2">CARE Balance</p>
+        <p id="careBalance" class="text-4xl font-bold text-emerald-600">0</p>
+      </div>
+      
+      <div class="card-document text-center">
+        <p class="text-sm text-gray-600 mb-2">Campaigns Created</p>
+        <p id="campaignCount" class="text-4xl font-bold text-blue-600">0</p>
+      </div>
+      
+      <div class="card-document text-center">
+        <p class="text-sm text-gray-600 mb-2">Dragon Status</p>
+        <p id="dragonStatus" class="text-2xl">No Dragon Yet</p>
+      </div>
+    </div>
+
+    <!-- Action Buttons Row -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+      <button id="generateUserSaveBtn" class="copy-btn">
+        Download USER_SAVE (NFC)
+      </button>
+      <button id="createCampaignBtn" class="btn-primary">
+        Create Campaign
+      </button>
+      <button onclick="window.location.href='dragon.html'" id="dragonPageBtn" class="btn-secondary" style="display:none;">
+        Visit Dragon
+      </button>
+    </div>
+
+    <!-- Campaign Management Section -->
+    <div class="mb-8">
+      <div class="flex justify-between items-center mb-6">
+        <h2 class="text-3xl font-bold text-white">Your Campaigns</h2>
+      </div>
+
+      <!-- Create Campaign Modal -->
+      <div id="createCampaignModal" class="hidden fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+        <div class="card-document max-w-md w-full">
+          <h3 class="text-2xl font-bold mb-6">Create New Campaign</h3>
+          
+          <form id="createCampaignForm" class="space-y-4">
+            <div>
+              <label class="block font-semibold mb-2">Campaign Name</label>
+              <input type="text" id="campaignNameInput" required
+                     class="w-full px-4 py-2 rounded-lg border-2 border-gray-300">
+            </div>
+
+            <div>
+              <label class="block font-semibold mb-2">Game System</label>
+              <select id="campaignSystemInput" required
+                      class="w-full px-4 py-2 rounded-lg border-2 border-gray-300">
+                <option value="">Choose a system...</option>
+                <option value="Fantasy">Fantasy</option>
+                <option value="Sci-Fi">Sci-Fi</option>
+                <option value="Cyberpunk">Cyberpunk</option>
+                <option value="Horror">Horror</option>
+                <option value="Cozy">Cozy</option>
+                <option value="Custom">Custom</option>
+              </select>
+            </div>
+
+            <div>
+              <label class="block font-semibold mb-2">Description</label>
+              <textarea id="campaignDescriptionInput" rows="3"
+                        class="w-full px-4 py-2 rounded-lg border-2 border-gray-300"
+                        placeholder="What's your campaign about?"></textarea>
+            </div>
+
+            <div class="flex gap-3 pt-4">
+              <button type="button" onclick="document.getElementById('createCampaignModal').classList.add('hidden')" 
+                      class="flex-1 btn-secondary">Cancel</button>
+              <button type="submit" class="flex-1 btn-primary">Create</button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <!-- Loading State -->
+      <div id="campaignsLoading" class="text-center py-12">
+        <div class="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-purple-400"></div>
+        <p class="text-purple-300 mt-4">Loading your campaigns...</p>
+      </div>
+
+      <!-- Campaigns Grid -->
+      <div id="campaignsGrid" class="hidden space-y-4">
+        <!-- Campaign cards inserted here with collapsible functionality -->
+      </div>
+
+      <!-- No Campaigns -->
+      <div id="noCampaigns" class="hidden">
+        <div class="card-document text-center py-12">
+          <p class="text-2xl text-gray-500 mb-4">No campaigns yet</p>
+          <p class="text-gray-600 mb-6">Create your first campaign to start your adventure!</p>
+          <button onclick="document.getElementById('createCampaignBtn').click()" class="btn-primary">
+            Create Your First Campaign
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="card-document">
+      <h3 class="text-2xl font-bold mb-4">Quick Actions</h3>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <a href="session.html" class="p-4 bg-emerald-100 rounded-lg transition text-center active:scale-98">
+          <p class="text-2xl mb-2">[LOG]</p>
+          <p class="font-semibold text-emerald-900">Log Session</p>
+          <p class="text-sm text-emerald-700">Earn CARE and track progress</p>
+        </a>
+        
+        <a href="tkep.html" class="p-4 bg-blue-100 rounded-lg transition text-center active:scale-98">
+          <p class="text-2xl mb-2">[TKEP]</p>
+          <p class="font-semibold text-blue-900">TKEP Documentation</p>
+          <p class="text-sm text-blue-700">View extraction methodology</p>
+        </a>
+      </div>
+    </div>
+
+  </main>
+
+  <script type="module" src="dashboard-v2.js"></script>
+  
+</body>
+</html>

@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Log Session - Nexus Hub</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body class="bg-gradient-to-br from-slate-900 via-emerald-900 to-teal-900 min-h-screen">
+
+  <!-- Navigation Header -->
+  <header class="bg-slate-900/80 backdrop-blur-sm border-b border-emerald-500/30 sticky top-0 z-50">
+    <div class="container mx-auto px-4 py-4 flex justify-between items-center">
+      <div class="flex items-center gap-3">
+        <a href="dashboard.html" class="text-emerald-400 hover:text-emerald-300 transition">← Back</a>
+        <span class="text-3xl">📝</span>
+        <h1 class="text-2xl font-bold text-emerald-400">Log Session</h1>
+      </div>
+      
+      <div class="flex items-center gap-4">
+        <span id="userEmail" class="text-emerald-300 text-sm"></span>
+        <a href="dashboard.html" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg transition">
+          Dashboard
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <main class="container mx-auto px-4 py-8 max-w-3xl">
+    
+    <!-- Loading State -->
+    <div id="loading" class="text-center py-20">
+      <div class="inline-block animate-spin rounded-full h-16 w-16 border-b-2 border-emerald-400"></div>
+      <p class="text-emerald-300 mt-4">Loading campaigns...</p>
+    </div>
+
+    <!-- Session Form -->
+    <div id="sessionForm" class="hidden">
+      <form id="logSessionForm" class="card-document">
+        
+        <!-- Campaign Selection -->
+        <div class="mb-6">
+          <label class="block font-semibold mb-3 text-lg">Campaign</label>
+          <select id="campaignSelect" required
+                  class="w-full px-4 py-3 rounded-lg text-lg">
+            <option value="">Select a campaign...</option>
+          </select>
+          <p class="text-sm mt-2 text-gray-600">Don't see your campaign? <a href="dashboard.html" class="text-emerald-600 hover:underline">Create one first</a></p>
+        </div>
+
+        <!-- Session Date -->
+        <div class="mb-6">
+          <label class="block font-semibold mb-3">Session Date</label>
+          <input type="date" id="sessionDate" required
+                 class="w-full px-4 py-3 rounded-lg">
+        </div>
+
+        <!-- Session Recap -->
+        <div class="mb-6">
+          <label class="block font-semibold mb-3">Session Recap</label>
+          <textarea id="sessionRecap" rows="6" 
+                    class="w-full px-4 py-3 rounded-lg"
+                    placeholder="What happened in this session?"></textarea>
+          <p class="text-sm mt-2 text-gray-600">Optional but recommended - helps you remember!</p>
+        </div>
+
+        <!-- CARE Actions -->
+        <div class="mb-8">
+          <label class="block font-semibold mb-4 text-lg">What did you do? (Select all that apply)</label>
+          
+          <div class="space-y-3">
+            <div class="checkbox-label">
+              <input type="checkbox" id="care_attendance" value="10">
+              <label for="care_attendance" class="flex-1 cursor-pointer">
+                <div class="font-semibold">Session Attendance</div>
+                <div class="text-sm">You showed up and played</div>
+                <div class="text-emerald-600 font-bold mt-1">+10 CARE</div>
+              </label>
+            </div>
+
+            <div class="checkbox-label">
+              <input type="checkbox" id="care_storytelling" value="5">
+              <label for="care_storytelling" class="flex-1 cursor-pointer">
+                <div class="font-semibold">Collaborative Storytelling</div>
+                <div class="text-sm">You added to the narrative</div>
+                <div class="text-emerald-600 font-bold mt-1">+5 CARE</div>
+              </label>
+            </div>
+
+            <div class="checkbox-label">
+              <input type="checkbox" id="care_helped" value="5">
+              <label for="care_helped" class="flex-1 cursor-pointer">
+                <div class="font-semibold">Helped Another Player</div>
+                <div class="text-sm">Explained rules, shared spotlight</div>
+                <div class="text-emerald-600 font-bold mt-1">+5 CARE</div>
+              </label>
+            </div>
+
+            <div class="checkbox-label">
+              <input type="checkbox" id="care_recap" value="10">
+              <label for="care_recap" class="flex-1 cursor-pointer">
+                <div class="font-semibold">Created Session Recap</div>
+                <div class="text-sm">You wrote a recap above (50+ characters)</div>
+                <div class="text-emerald-600 font-bold mt-1">+10 CARE</div>
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <!-- CARE Total Preview -->
+        <div class="bg-emerald-100 rounded-lg p-6 mb-6 border-2 border-emerald-600">
+          <div class="flex justify-between items-center">
+            <span class="font-semibold text-lg">Total CARE to Earn:</span>
+            <span id="careTotal" class="text-4xl font-bold text-emerald-600">0 ♥️</span>
+          </div>
+        </div>
+
+        <!-- Submit Button -->
+        <button type="submit" id="submitBtn" class="btn-primary w-full text-lg py-4">
+          Log Session & Earn CARE
+        </button>
+
+      </form>
+    </div>
+
+    <!-- Success Message -->
+    <div id="successMessage" class="hidden">
+      <div class="card-document text-center">
+        <div class="text-8xl mb-6 celebrate">✨</div>
+        <h2 class="text-4xl font-bold text-emerald-600 mb-4">Session Logged!</h2>
+        <div class="text-6xl font-bold mb-2">
+          +<span id="earnedCare">0</span> CARE
+        </div>
+        <p class="text-lg mb-8">Added to your balance and campaign total</p>
+        
+        <div id="eggProgress" class="hidden mb-8 p-6 bg-purple-100 rounded-lg border-2 border-purple-600">
+          <p class="font-semibold mb-2">🥚 Ember Egg Progress</p>
+          <p id="eggMessage" class="text-lg"></p>
+        </div>
+        
+        <div class="flex gap-4 justify-center">
+          <button onclick="window.location.href='dashboard.html'" class="btn-primary">
+            Back to Dashboard
+          </button>
+          <button onclick="window.location.reload()" class="btn-secondary">
+            Log Another Session
+          </button>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <script type="module" src="session.js"></script>
+
+</body>
+</html>

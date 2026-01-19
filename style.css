@@ -1,0 +1,402 @@
+/* ============================================
+   NEXUS HUB - GLOBAL STYLES
+   Paper Document Theme
+   ============================================ */
+
+/* ============================================
+   ROOT VARIABLES
+   ============================================ */
+:root {
+  /* Color Palette */
+  --ember-gold: #F59E0B;
+  --ember-dark: #92400E;
+  --flame-orange: #EA580C;
+  --scarlet-red: #DC2626;
+  
+  --void-slate: #0F172A;
+  --shadow-slate: #1E293B;
+  --mist-slate: #475569;
+  
+  --paper-cream: #FAF5EB;
+  --paper-light: #FFFAF0;
+  --ink-black: #1a1a1a;
+  --ink-gray: #2a2a2a;
+  
+  /* Campaign Type Colors */
+  --fantasy-purple: #A855F7;
+  --scifi-blue: #3B82F6;
+  --cyber-cyan: #06B6D4;
+  --horror-red: #EF4444;
+  --cozy-green: #10B981;
+  
+  /* Spacing */
+  --spacing-xs: 0.25rem;
+  --spacing-sm: 0.5rem;
+  --spacing-md: 1rem;
+  --spacing-lg: 1.5rem;
+  --spacing-xl: 2rem;
+  
+  /* Shadows */
+  --shadow-sm: 2px 2px 8px rgba(0, 0, 0, 0.15);
+  --shadow-md: 4px 4px 16px rgba(0, 0, 0, 0.25);
+  --shadow-lg: 8px 8px 24px rgba(0, 0, 0, 0.35);
+}
+
+/* ============================================
+   BASE STYLES
+   ============================================ */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Georgia', 'Times New Roman', serif;
+  line-height: 1.6;
+  color: var(--ink-gray);
+  background: linear-gradient(to bottom right, 
+    #1a1625 0%,
+    #2d1b4e 50%,
+    #1a1625 100%);
+  min-height: 100vh;
+}
+
+/* ============================================
+   PAPER DOCUMENT CARDS
+   ============================================ */
+.card-document {
+  background: linear-gradient(to bottom, 
+    var(--paper-light),
+    var(--paper-cream));
+  border: 2px solid rgba(120, 100, 80, 0.3);
+  border-radius: 2px;
+  padding: var(--spacing-lg);
+  box-shadow: var(--shadow-sm), inset 0 0 60px rgba(0, 0, 0, 0.02);
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+/* Paper texture overlay */
+.card-document::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: repeating-linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0.1) 0px,
+    rgba(255, 255, 255, 0.1) 1px,
+    transparent 1px,
+    transparent 2px);
+  pointer-events: none;
+  opacity: 0.3;
+}
+
+.card-document:hover {
+  background: linear-gradient(to bottom,
+    #FFFBF5,
+    #FFF8F0);
+  border-color: rgba(245, 158, 11, 0.6);
+  box-shadow: var(--shadow-md), inset 0 0 80px rgba(245, 158, 11, 0.05);
+  transform: scale(1.02);
+  cursor: pointer;
+}
+
+.card-document:active {
+  transform: scale(0.98);
+  box-shadow: 1px 1px 4px rgba(0, 0, 0, 0.2);
+}
+
+/* ============================================
+   TYPOGRAPHY
+   ============================================ */
+
+/* Headers - Typewriter style */
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Courier New', 'Courier', monospace;
+  font-weight: 700;
+  color: var(--ink-black);
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+
+.card-document h3 {
+  font-size: 1.25rem;
+  margin-bottom: var(--spacing-sm);
+}
+
+/* Body text - Serif */
+p {
+  font-family: 'Georgia', 'Times New Roman', serif;
+  color: var(--ink-gray);
+  line-height: 1.6;
+}
+
+/* Metadata - Handwritten feel */
+.meta, .timestamp {
+  font-family: 'Comic Sans MS', cursive;
+  font-size: 0.85rem;
+  color: #666;
+  font-style: italic;
+}
+
+/* Monospace for code/stats */
+.code, .stats {
+  font-family: 'Courier New', monospace;
+  background: rgba(0, 0, 0, 0.05);
+  padding: 0.125rem 0.25rem;
+  border-radius: 2px;
+}
+
+/* ============================================
+   BUTTONS
+   ============================================ */
+button, .btn {
+  font-family: 'Courier New', 'Courier', monospace;
+  font-weight: 700;
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, var(--ember-gold), var(--flame-orange));
+  color: white;
+  box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3);
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(245, 158, 11, 0.4);
+}
+
+.btn-secondary {
+  background: var(--mist-slate);
+  color: white;
+}
+
+.btn-secondary:hover {
+  background: var(--shadow-slate);
+}
+
+.btn-danger {
+  background: var(--scarlet-red);
+  color: white;
+}
+
+.btn-danger:hover {
+  background: #b91c1c;
+}
+
+button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* ============================================
+   FORMS
+   ============================================ */
+input, textarea, select {
+  font-family: 'Georgia', 'Times New Roman', serif;
+  width: 100%;
+  padding: 0.75rem;
+  border: 2px solid var(--mist-slate);
+  border-radius: 4px;
+  background: white;
+  color: var(--ink-black);
+  transition: border-color 0.2s;
+}
+
+input:focus, textarea:focus, select:focus {
+  outline: none;
+  border-color: var(--ember-gold);
+  box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.1);
+}
+
+label {
+  font-family: 'Courier New', monospace;
+  font-weight: 600;
+  color: var(--ink-black);
+  display: block;
+  margin-bottom: var(--spacing-xs);
+}
+
+/* ============================================
+   CHECKBOXES (Paper Form Style)
+   ============================================ */
+input[type="checkbox"] {
+  width: 1.25rem;
+  height: 1.25rem;
+  cursor: pointer;
+  accent-color: var(--ember-gold);
+}
+
+.checkbox-label {
+  display: flex;
+  align-items: start;
+  gap: var(--spacing-md);
+  padding: var(--spacing-md);
+  background: rgba(250, 245, 235, 0.5);
+  border: 1px solid rgba(120, 100, 80, 0.2);
+  border-radius: 4px;
+  transition: all 0.2s;
+  cursor: pointer;
+}
+
+.checkbox-label:hover {
+  background: rgba(255, 250, 240, 0.8);
+  border-color: var(--ember-gold);
+}
+
+/* ============================================
+   PROGRESS BARS
+   ============================================ */
+.progress-bar {
+  background: var(--mist-slate);
+  height: 1.5rem;
+  border-radius: 12px;
+  overflow: hidden;
+  position: relative;
+}
+
+.progress-fill {
+  background: linear-gradient(90deg, var(--ember-gold), var(--flame-orange));
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-weight: 700;
+  font-size: 0.75rem;
+  transition: width 0.5s ease;
+  font-family: 'Courier New', monospace;
+}
+
+/* ============================================
+   ANIMATIONS
+   ============================================ */
+
+/* Portal glow for special elements */
+@keyframes portal-glow {
+  0%, 100% { box-shadow: 0 0 20px rgba(245, 158, 11, 0.3); }
+  50% { box-shadow: 0 0 40px rgba(245, 158, 11, 0.6); }
+}
+
+.portal-glow {
+  animation: portal-glow 3s ease-in-out infinite;
+}
+
+/* Egg pulse */
+@keyframes egg-pulse {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.08); opacity: 0.85; }
+}
+
+.egg-pulse {
+  animation: egg-pulse 2s ease-in-out infinite;
+}
+
+/* Celebrate animation */
+@keyframes celebrate {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  25% { transform: translateY(-20px) rotate(-5deg); }
+  75% { transform: translateY(-20px) rotate(5deg); }
+}
+
+.celebrate {
+  animation: celebrate 0.6s ease-in-out infinite;
+}
+
+/* ============================================
+   UTILITIES
+   ============================================ */
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 1rem;
+}
+
+.container-narrow {
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 0 1rem;
+}
+
+.hidden {
+  display: none !important;
+}
+
+.text-center {
+  text-align: center;
+}
+
+.flex {
+  display: flex;
+}
+
+.flex-col {
+  flex-direction: column;
+}
+
+.gap-4 {
+  gap: 1rem;
+}
+
+.mt-4 {
+  margin-top: 1rem;
+}
+
+.mb-4 {
+  margin-bottom: 1rem;
+}
+
+/* ============================================
+   RESPONSIVE
+   ============================================ */
+@media (max-width: 768px) {
+  .card-document {
+    padding: var(--spacing-md);
+  }
+  
+  h1 {
+    font-size: 1.75rem;
+  }
+  
+  button {
+    padding: 0.5rem 1rem;
+  }
+}
+
+/* ============================================
+   ACCESSIBILITY
+   ============================================ */
+*:focus {
+  outline: 2px solid var(--ember-gold);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* ============================================
+   PRINT STYLES
+   ============================================ */
+@media print {
+  body {
+    background: white;
+  }
+  
+  .card-document {
+    page-break-inside: avoid;
+  }
+}

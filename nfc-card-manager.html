@@ -1,0 +1,754 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Nexus NFC Card Manager</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body {
+      background: linear-gradient(135deg, #0a0e14 0%, #1f2937 100%);
+      min-height: 100vh;
+      color: #e5e7eb;
+      font-family: 'Courier New', monospace;
+    }
+    
+    .card {
+      background: linear-gradient(135deg, #1f2937 0%, #374151 100%);
+      border: 2px solid #4b5563;
+      border-radius: 12px;
+      padding: 2rem;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+    }
+    
+    .btn {
+      padding: 1rem 2rem;
+      border-radius: 8px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: all 0.2s;
+      border: none;
+      font-size: 1rem;
+      font-family: 'Courier New', monospace;
+    }
+    
+    .btn-primary {
+      background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+      color: white;
+    }
+    
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4);
+    }
+    
+    .btn-secondary {
+      background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+      color: white;
+    }
+    
+    .btn-danger {
+      background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+      color: white;
+    }
+    
+    .status-indicator {
+      display: inline-block;
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      margin-right: 8px;
+    }
+    
+    .status-ready { background: #10b981; }
+    .status-error { background: #ef4444; }
+    .status-pending { background: #f59e0b; }
+    
+    .hex-dump {
+      background: #0a0e14;
+      padding: 1rem;
+      border-radius: 8px;
+      font-family: 'Courier New', monospace;
+      font-size: 0.875rem;
+      overflow-x: auto;
+      color: #00ff88;
+    }
+    
+    .code-block {
+      background: #0a0e14;
+      padding: 1rem;
+      border-radius: 8px;
+      font-family: 'Courier New', monospace;
+      font-size: 0.875rem;
+      overflow-x: auto;
+      white-space: pre-wrap;
+      word-break: break-all;
+    }
+    
+    input, select, textarea {
+      background: #374151;
+      border: 2px solid #4b5563;
+      color: #e5e7eb;
+      padding: 0.75rem;
+      border-radius: 8px;
+      width: 100%;
+      font-family: 'Courier New', monospace;
+    }
+    
+    input:focus, select:focus, textarea:focus {
+      outline: none;
+      border-color: #10b981;
+    }
+    
+    label {
+      display: block;
+      margin-bottom: 0.5rem;
+      font-weight: bold;
+      color: #00ff88;
+    }
+    
+    .divider {
+      border-top: 2px solid #4b5563;
+      margin: 2rem 0;
+    }
+  </style>
+</head>
+<body class="p-4">
+
+  <div class="max-w-4xl mx-auto">
+    
+    <!-- Header -->
+    <div class="text-center mb-8">
+      <h1 class="text-4xl font-bold mb-2" style="color: #00ff88;">NEXUS NFC CARD MANAGER</h1>
+      <p class="text-gray-400">Browser-Based Binary Encoder for CARE Currency</p>
+      <p class="text-sm text-gray-500 mt-2">Based on nfc_binary_encoder.py by Casey Holler</p>
+    </div>
+
+    <!-- NFC Support Check -->
+    <div class="card mb-6">
+      <h2 class="text-2xl font-bold mb-4">System Status</h2>
+      <div class="space-y-2">
+        <div>
+          <span class="status-indicator" id="nfcStatus"></span>
+          <span id="nfcStatusText">Checking NFC support...</span>
+        </div>
+        <div class="text-sm text-gray-400 mt-2" id="nfcInfo"></div>
+      </div>
+    </div>
+
+    <!-- Tab Navigation -->
+    <div class="flex gap-2 mb-6">
+      <button class="btn btn-primary flex-1" onclick="showTab('encode')">ENCODE & WRITE</button>
+      <button class="btn btn-secondary flex-1" onclick="showTab('read')">READ & DECODE</button>
+      <button class="btn btn-secondary flex-1" onclick="showTab('test')">TEST ENCODER</button>
+    </div>
+
+    <!-- ENCODE TAB -->
+    <div id="encodeTab" class="card mb-6">
+      <h2 class="text-2xl font-bold mb-4">Encode USER_SAVE to NFC Card</h2>
+      
+      <form id="encodeForm" class="space-y-4">
+        <div>
+          <label>User Email</label>
+          <input type="email" id="userEmail" value="test@nexushub.com" required>
+        </div>
+
+        <div>
+          <label>User UID (Firebase)</label>
+          <input type="text" id="userUid" value="abc123xyz789" required>
+        </div>
+
+        <div class="grid grid-cols-3 gap-4">
+          <div>
+            <label>CARE Balance (Copper)</label>
+            <input type="number" id="careCopper" value="250" min="0">
+          </div>
+          <div>
+            <label>Silver (Future)</label>
+            <input type="number" id="careSilver" value="0" min="0">
+          </div>
+          <div>
+            <label>Gold (Future)</label>
+            <input type="number" id="careGold" value="0" min="0">
+          </div>
+        </div>
+
+        <div>
+          <label>Dragon Status</label>
+          <select id="dragonStatus">
+            <option value="none">None (No dragon yet)</option>
+            <option value="incubating">Incubating (Egg hatching)</option>
+            <option value="hatched">Hatched (Active companion)</option>
+          </select>
+        </div>
+
+        <div id="dragonDetailsSection" style="display: none;">
+          <div class="grid grid-cols-2 gap-4">
+            <div>
+              <label>Dragon Name</label>
+              <input type="text" id="dragonName" maxlength="10" placeholder="Max 10 chars">
+            </div>
+            <div>
+              <label>Dragon Level</label>
+              <input type="number" id="dragonLevel" value="1" min="1" max="255">
+            </div>
+          </div>
+          <div id="incubatingSection" style="display: none;">
+            <label>Sessions Until Hatch</label>
+            <input type="number" id="sessionsRemaining" value="10" min="0" max="10">
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <label>Lifetime Actions</label>
+            <input type="number" id="lifetimeActions" value="0" min="0">
+          </div>
+          <div>
+            <label>Lifetime Sessions</label>
+            <input type="number" id="lifetimeSessions" value="0" min="0">
+          </div>
+        </div>
+
+        <div class="divider"></div>
+
+        <div class="flex gap-4">
+          <button type="submit" class="btn btn-primary flex-1">
+            Generate Binary Data
+          </button>
+          <button type="button" onclick="writeToNFC()" class="btn btn-secondary flex-1" id="writeNFCBtn" disabled>
+            Write to NFC Card
+          </button>
+        </div>
+      </form>
+
+      <!-- Output Section -->
+      <div id="encodeOutput" class="mt-6 hidden">
+        <h3 class="text-xl font-bold mb-3">Generated USER_SAVE</h3>
+        
+        <div class="mb-4">
+          <p class="text-sm text-gray-400 mb-2">Binary Size: <span id="binarySize" class="text-green-400 font-bold"></span></p>
+          <p class="text-sm text-gray-400 mb-2">Fits NTAG 216: <span id="fitsCard" class="text-green-400 font-bold"></span></p>
+          <p class="text-sm text-gray-400 mb-2">Checksum: <span id="checksumStatus" class="text-green-400 font-bold"></span></p>
+        </div>
+
+        <div class="mb-4">
+          <label>Base64 Encoded (for NFC Text Record)</label>
+          <div class="code-block" id="base64Output"></div>
+          <button class="btn btn-secondary mt-2" onclick="copyBase64()">Copy Base64</button>
+        </div>
+
+        <div>
+          <label>Hex Dump (First 64 bytes)</label>
+          <div class="hex-dump" id="hexDump"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- READ TAB -->
+    <div id="readTab" class="card mb-6 hidden">
+      <h2 class="text-2xl font-bold mb-4">Read & Decode NFC Card</h2>
+      
+      <div class="mb-6">
+        <button class="btn btn-primary w-full" onclick="readFromNFC()">
+          Scan NFC Card
+        </button>
+      </div>
+
+      <div class="mb-6">
+        <label>Or paste Base64 to decode:</label>
+        <textarea id="base64Input" rows="4" placeholder="Paste Base64 encoded USER_SAVE here..."></textarea>
+        <button class="btn btn-secondary mt-2" onclick="decodeBase64()">Decode</button>
+      </div>
+
+      <div id="decodeOutput" class="hidden">
+        <h3 class="text-xl font-bold mb-3">Decoded USER_SAVE</h3>
+        <div class="code-block" id="decodedData"></div>
+      </div>
+    </div>
+
+    <!-- TEST TAB -->
+    <div id="testTab" class="card mb-6 hidden">
+      <h2 class="text-2xl font-bold mb-4">Test Binary Encoder</h2>
+      
+      <button class="btn btn-primary w-full mb-4" onclick="runEncoderTest()">
+        Run Encode → Decode Test
+      </button>
+
+      <div id="testOutput" class="hidden">
+        <div class="code-block" id="testResults"></div>
+      </div>
+    </div>
+
+  </div>
+
+  <script type="module">
+    // ═══════════════════════════════════════════════════════════════
+    // NEXUS NFC BINARY ENCODER (JavaScript Port)
+    // Based on nfc_binary_encoder.py by Casey Holler
+    // ═══════════════════════════════════════════════════════════════
+
+    class NFCEncoder {
+      constructor() {
+        this.MAGIC = 0x43415245; // "CARE"
+        this.VERSION = 0x01;
+        this.MAX_SIZE = 868; // NTAG 216 capacity
+      }
+
+      // Generate anonymous user hash from email + uid
+      async generateUserHash(email, uid) {
+        const data = `${email}:${uid}`;
+        const encoder = new TextEncoder();
+        const hashBuffer = await crypto.subtle.digest('SHA-256', encoder.encode(data));
+        const hashArray = new Uint8Array(hashBuffer);
+        return hashArray.slice(0, 8); // Truncate to 8 bytes
+      }
+
+      // Encode dragon name to fixed 10-byte buffer
+      encodeDragonName(name) {
+        const buffer = new Uint8Array(10);
+        if (!name) return buffer;
+        
+        const encoder = new TextEncoder();
+        const encoded = encoder.encode(name.slice(0, 10));
+        buffer.set(encoded);
+        return buffer;
+      }
+
+      // Calculate CRC16 checksum
+      calculateCRC16(data) {
+        let crc = 0xFFFF;
+        for (let i = 0; i < data.length; i++) {
+          crc ^= data[i];
+          for (let j = 0; j < 8; j++) {
+            crc = (crc & 0x0001) ? ((crc >> 1) ^ 0xA001) : (crc >> 1);
+          }
+        }
+        return crc;
+      }
+
+      // Pack userData into binary format
+      async encode(userData) {
+        const buffer = new ArrayBuffer(63);
+        const view = new DataView(buffer);
+        const uint8View = new Uint8Array(buffer);
+        
+        let offset = 0;
+
+        // Magic number (4 bytes)
+        view.setUint32(offset, this.MAGIC, false); // Big-endian
+        offset += 4;
+
+        // Version (1 byte)
+        view.setUint8(offset, this.VERSION);
+        offset += 1;
+
+        // User hash (8 bytes)
+        const userHash = await this.generateUserHash(userData.email, userData.uid);
+        uint8View.set(userHash, offset);
+        offset += 8;
+
+        // CARE balances (12 bytes)
+        view.setUint32(offset, userData.careBalance || 0, false);
+        offset += 4;
+        view.setUint32(offset, userData.careSilver || 0, false);
+        offset += 4;
+        view.setUint32(offset, userData.careGold || 0, false);
+        offset += 4;
+
+        // Dragon status (20 bytes)
+        const eggStatusMap = { 'none': 0, 'incubating': 1, 'hatched': 2 };
+        view.setUint8(offset, eggStatusMap[userData.eggStatus] || 0);
+        offset += 1;
+        
+        view.setUint8(offset, userData.eggSessionsRemaining || 10);
+        offset += 1;
+
+        // Dragon ID (8 bytes) - generate hash or zeros
+        if (userData.dragonId) {
+          const dragonHashBuffer = await crypto.subtle.digest(
+            'SHA-256', 
+            new TextEncoder().encode(userData.dragonId)
+          );
+          uint8View.set(new Uint8Array(dragonHashBuffer).slice(0, 8), offset);
+        }
+        offset += 8;
+
+        // Dragon name (10 bytes)
+        const dragonNameBytes = this.encodeDragonName(userData.dragonName);
+        uint8View.set(dragonNameBytes, offset);
+        offset += 10;
+
+        // Dragon level (1 byte)
+        view.setUint8(offset, userData.dragonLevel || 1);
+        offset += 1;
+
+        // Timestamps (8 bytes)
+        const createdAt = Math.floor((userData.createdAt || Date.now()) / 1000);
+        const lastSync = Math.floor(Date.now() / 1000);
+        view.setUint32(offset, createdAt, false);
+        offset += 4;
+        view.setUint32(offset, lastSync, false);
+        offset += 4;
+
+        // Lifetime stats (8 bytes)
+        view.setUint32(offset, userData.lifetimeActions || 0, false);
+        offset += 4;
+        view.setUint32(offset, userData.lifetimeSessions || 0, false);
+        offset += 4;
+
+        // Calculate and append checksum (2 bytes)
+        const dataForChecksum = new Uint8Array(buffer, 0, 61);
+        const checksum = this.calculateCRC16(dataForChecksum);
+        view.setUint16(offset, checksum, false);
+
+        return uint8View;
+      }
+
+      // Convert binary to Base64
+      binaryToBase64(binaryData) {
+        let binary = '';
+        for (let i = 0; i < binaryData.length; i++) {
+          binary += String.fromCharCode(binaryData[i]);
+        }
+        return btoa(binary);
+      }
+
+      // Convert Base64 to binary
+      base64ToBinary(base64String) {
+        const binary = atob(base64String);
+        const bytes = new Uint8Array(binary.length);
+        for (let i = 0; i < binary.length; i++) {
+          bytes[i] = binary.charCodeAt(i);
+        }
+        return bytes;
+      }
+
+      // Decode binary back to userData
+      async decode(binaryData) {
+        const view = new DataView(binaryData.buffer);
+        let offset = 0;
+
+        // Verify magic number
+        const magic = view.getUint32(offset, false);
+        offset += 4;
+        if (magic !== this.MAGIC) {
+          throw new Error(`Invalid magic number: ${magic.toString(16)}`);
+        }
+
+        // Version
+        const version = view.getUint8(offset);
+        offset += 1;
+
+        // User hash (skip for now)
+        offset += 8;
+
+        // CARE balances
+        const careBalance = view.getUint32(offset, false);
+        offset += 4;
+        const careSilver = view.getUint32(offset, false);
+        offset += 4;
+        const careGold = view.getUint32(offset, false);
+        offset += 4;
+
+        // Dragon status
+        const eggStatusCode = view.getUint8(offset);
+        offset += 1;
+        const eggStatusMap = ['none', 'incubating', 'hatched'];
+        const eggStatus = eggStatusMap[eggStatusCode] || 'none';
+
+        const eggSessionsRemaining = view.getUint8(offset);
+        offset += 1;
+
+        // Dragon ID (skip)
+        offset += 8;
+
+        // Dragon name
+        const dragonNameBytes = binaryData.slice(offset, offset + 10);
+        const dragonName = new TextDecoder().decode(dragonNameBytes).replace(/\0/g, '');
+        offset += 10;
+
+        const dragonLevel = view.getUint8(offset);
+        offset += 1;
+
+        // Timestamps
+        const createdAt = view.getUint32(offset, false);
+        offset += 4;
+        const lastSync = view.getUint32(offset, false);
+        offset += 4;
+
+        // Lifetime stats
+        const lifetimeActions = view.getUint32(offset, false);
+        offset += 4;
+        const lifetimeSessions = view.getUint32(offset, false);
+        offset += 4;
+
+        // Verify checksum
+        const storedChecksum = view.getUint16(offset, false);
+        const dataForChecksum = binaryData.slice(0, 61);
+        const calculatedChecksum = this.calculateCRC16(dataForChecksum);
+        
+        const checksumValid = (storedChecksum === calculatedChecksum);
+
+        return {
+          version,
+          careBalance,
+          careSilver,
+          careGold,
+          eggStatus,
+          eggSessionsRemaining,
+          dragonName: dragonName || null,
+          dragonLevel,
+          createdAt: new Date(createdAt * 1000),
+          lastSync: new Date(lastSync * 1000),
+          lifetimeActions,
+          lifetimeSessions,
+          checksumValid
+        };
+      }
+    }
+
+    // Make encoder global
+    window.encoder = new NFCEncoder();
+    window.currentBinary = null;
+
+    // Check NFC Support
+    async function checkNFCSupport() {
+      const statusEl = document.getElementById('nfcStatus');
+      const textEl = document.getElementById('nfcStatusText');
+      const infoEl = document.getElementById('nfcInfo');
+
+      if ('NDEFReader' in window) {
+        statusEl.className = 'status-indicator status-ready';
+        textEl.textContent = 'NFC Supported ✓';
+        infoEl.textContent = 'Web NFC API available. You can read/write NFC tags.';
+      } else {
+        statusEl.className = 'status-indicator status-error';
+        textEl.textContent = 'NFC Not Supported ✗';
+        infoEl.innerHTML = 'Web NFC API not available. Use Chrome on Android or enable chrome://flags/#enable-experimental-web-platform-features<br><br>You can still test encoding/decoding with Base64.';
+      }
+    }
+
+    checkNFCSupport();
+
+    // Tab Switching
+    window.showTab = function(tab) {
+      document.getElementById('encodeTab').classList.add('hidden');
+      document.getElementById('readTab').classList.add('hidden');
+      document.getElementById('testTab').classList.add('hidden');
+
+      document.getElementById(tab + 'Tab').classList.remove('hidden');
+    };
+
+    // Dragon status change handler
+    document.getElementById('dragonStatus').addEventListener('change', function() {
+      const status = this.value;
+      const detailsSection = document.getElementById('dragonDetailsSection');
+      const incubatingSection = document.getElementById('incubatingSection');
+
+      if (status === 'none') {
+        detailsSection.style.display = 'none';
+      } else {
+        detailsSection.style.display = 'block';
+        if (status === 'incubating') {
+          incubatingSection.style.display = 'block';
+        } else {
+          incubatingSection.style.display = 'none';
+        }
+      }
+    });
+
+    // Encode Form Submit
+    document.getElementById('encodeForm').addEventListener('submit', async function(e) {
+      e.preventDefault();
+
+      const userData = {
+        email: document.getElementById('userEmail').value,
+        uid: document.getElementById('userUid').value,
+        careBalance: parseInt(document.getElementById('careCopper').value),
+        careSilver: parseInt(document.getElementById('careSilver').value),
+        careGold: parseInt(document.getElementById('careGold').value),
+        eggStatus: document.getElementById('dragonStatus').value,
+        eggSessionsRemaining: parseInt(document.getElementById('sessionsRemaining').value) || 10,
+        dragonName: document.getElementById('dragonName').value || null,
+        dragonLevel: parseInt(document.getElementById('dragonLevel').value) || 1,
+        dragonId: document.getElementById('dragonName').value ? `dragon_${Date.now()}` : null,
+        lifetimeActions: parseInt(document.getElementById('lifetimeActions').value) || 0,
+        lifetimeSessions: parseInt(document.getElementById('lifetimeSessions').value) || 0,
+        createdAt: Date.now()
+      };
+
+      try {
+        // Encode
+        const binary = await window.encoder.encode(userData);
+        window.currentBinary = binary;
+
+        // Generate Base64
+        const base64 = window.encoder.binaryToBase64(binary);
+
+        // Display results
+        document.getElementById('binarySize').textContent = `${binary.length} bytes`;
+        document.getElementById('fitsCard').textContent = binary.length <= 868 ? 'YES ✓' : 'NO ✗';
+        document.getElementById('checksumStatus').textContent = 'Valid ✓';
+        document.getElementById('base64Output').textContent = base64;
+
+        // Hex dump
+        let hexDump = '';
+        for (let i = 0; i < Math.min(64, binary.length); i++) {
+          if (i > 0 && i % 16 === 0) hexDump += '\n';
+          hexDump += binary[i].toString(16).padStart(2, '0') + ' ';
+        }
+        document.getElementById('hexDump').textContent = hexDump;
+
+        // Show output
+        document.getElementById('encodeOutput').classList.remove('hidden');
+        document.getElementById('writeNFCBtn').disabled = false;
+
+      } catch (error) {
+        alert('Encoding error: ' + error.message);
+        console.error(error);
+      }
+    });
+
+    // Copy Base64
+    window.copyBase64 = function() {
+      const base64 = document.getElementById('base64Output').textContent;
+      navigator.clipboard.writeText(base64);
+      alert('Base64 copied to clipboard!');
+    };
+
+    // Write to NFC
+    window.writeToNFC = async function() {
+      if (!('NDEFReader' in window)) {
+        alert('NFC not supported on this device/browser');
+        return;
+      }
+
+      if (!window.currentBinary) {
+        alert('Generate binary data first!');
+        return;
+      }
+
+      try {
+        const ndef = new NDEFReader();
+        const base64 = window.encoder.binaryToBase64(window.currentBinary);
+
+        await ndef.write({
+          records: [{
+            recordType: "text",
+            data: base64
+          }]
+        });
+
+        alert('✓ USER_SAVE written to NFC card!');
+
+      } catch (error) {
+        alert('NFC write error: ' + error.message);
+        console.error(error);
+      }
+    };
+
+    // Read from NFC
+    window.readFromNFC = async function() {
+      if (!('NDEFReader' in window)) {
+        alert('NFC not supported on this device/browser');
+        return;
+      }
+
+      try {
+        const ndef = new NDEFReader();
+        await ndef.scan();
+
+        alert('Ready to scan. Hold NFC card to device...');
+
+        ndef.addEventListener("reading", async ({ message }) => {
+          const textRecord = message.records.find(record => record.recordType === "text");
+          
+          if (textRecord) {
+            const decoder = new TextDecoder();
+            const base64 = decoder.decode(textRecord.data);
+            
+            // Decode
+            const binary = window.encoder.base64ToBinary(base64);
+            const decoded = await window.encoder.decode(binary);
+
+            // Display
+            document.getElementById('decodedData').textContent = JSON.stringify(decoded, null, 2);
+            document.getElementById('decodeOutput').classList.remove('hidden');
+          }
+        });
+
+      } catch (error) {
+        alert('NFC read error: ' + error.message);
+        console.error(error);
+      }
+    };
+
+    // Decode Base64
+    window.decodeBase64 = async function() {
+      const base64 = document.getElementById('base64Input').value.trim();
+      if (!base64) {
+        alert('Paste Base64 data first!');
+        return;
+      }
+
+      try {
+        const binary = window.encoder.base64ToBinary(base64);
+        const decoded = await window.encoder.decode(binary);
+
+        document.getElementById('decodedData').textContent = JSON.stringify(decoded, null, 2);
+        document.getElementById('decodeOutput').classList.remove('hidden');
+
+      } catch (error) {
+        alert('Decode error: ' + error.message);
+        console.error(error);
+      }
+    };
+
+    // Run Encoder Test
+    window.runEncoderTest = async function() {
+      const testData = {
+        email: 'test@nexushub.com',
+        uid: 'test_uid_12345',
+        careBalance: 500,
+        careSilver: 50,
+        careGold: 5,
+        eggStatus: 'hatched',
+        eggSessionsRemaining: 0,
+        dragonName: 'Ember',
+        dragonLevel: 3,
+        dragonId: 'dragon_test',
+        lifetimeActions: 150,
+        lifetimeSessions: 25,
+        createdAt: Date.now()
+      };
+
+      try {
+        // Encode
+        const binary = await window.encoder.encode(testData);
+        const base64 = window.encoder.binaryToBase64(binary);
+
+        // Decode
+        const decoded = await window.encoder.decode(binary);
+
+        // Compare
+        let results = '═══ ENCODE → DECODE TEST ═══\n\n';
+        results += `Original Data:\n${JSON.stringify(testData, null, 2)}\n\n`;
+        results += `Binary Size: ${binary.length} bytes\n`;
+        results += `Fits NTAG 216: ${binary.length <= 868 ? 'YES ✓' : 'NO ✗'}\n\n`;
+        results += `Decoded Data:\n${JSON.stringify(decoded, null, 2)}\n\n`;
+        results += `Checksum Valid: ${decoded.checksumValid ? 'YES ✓' : 'NO ✗'}\n\n`;
+        results += `Test Result: ${decoded.checksumValid && decoded.careBalance === 500 ? 'PASS ✓' : 'FAIL ✗'}`;
+
+        document.getElementById('testResults').textContent = results;
+        document.getElementById('testOutput').classList.remove('hidden');
+
+      } catch (error) {
+        document.getElementById('testResults').textContent = 'Test failed: ' + error.message;
+        document.getElementById('testOutput').classList.remove('hidden');
+      }
+    };
+  </script>
+
+</body>
+</html>
