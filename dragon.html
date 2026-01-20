@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Your Dragon Companion</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body class="bg-gradient-to-br from-slate-900 via-orange-900 to-slate-900 min-h-screen">
+
+  <header class="bg-slate-900/80 backdrop-blur-sm border-b border-orange-500/30 sticky top-0 z-50">
+    <div class="container mx-auto px-4 py-4 flex justify-between items-center">
+      <div class="flex items-center gap-3">
+        <a href="dashboard.html" class="text-orange-400 hover:text-orange-300 transition">&larr; Back</a>
+        <div class="w-10 h-10 bg-gradient-to-br from-orange-500 to-red-600 rounded-lg flex items-center justify-center text-white font-bold text-xl">D</div>
+        <h1 class="text-2xl font-bold text-orange-400">Dragon Companion</h1>
+      </div>
+      
+      <div class="flex items-center gap-4">
+        <span id="userEmail" class="text-orange-300 text-sm">Loading...</span>
+      </div>
+    </div>
+  </header>
+
+  <main class="container mx-auto px-4 py-8 max-w-4xl">
+    
+    <!-- Loading State -->
+    <div id="loadingState" class="text-center py-12">
+      <div class="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-orange-400"></div>
+      <p class="text-orange-300 mt-4">Loading your dragon...</p>
+    </div>
+
+    <!-- No Dragon State -->
+    <div id="noDragonState" class="hidden">
+      <div class="card-document text-center py-12">
+        <div class="text-6xl mb-4">[EGG]</div>
+        <h2 class="text-3xl font-bold mb-4">No Dragon Yet</h2>
+        <p class="text-xl text-gray-600 mb-6">You need a dragon companion to visit this page!</p>
+        <p class="text-gray-700 mb-4">Dragon eggs cost <strong>1,000 CARE</strong> and hatch after <strong>10 sessions</strong>.</p>
+        <a href="dashboard.html" class="btn-primary inline-block">
+          Return to Dashboard
+        </a>
+      </div>
+    </div>
+
+    <!-- Incubating State -->
+    <div id="incubatingState" class="hidden">
+      <div class="card-document text-center py-12">
+        <div class="text-6xl mb-4">[EGG]</div>
+        <h2 class="text-3xl font-bold mb-4">Ember Egg Incubating</h2>
+        <p class="text-xl text-gray-600 mb-6">Your dragon is growing inside its egg!</p>
+        
+        <div class="bg-orange-50 p-6 rounded-lg mb-6 max-w-md mx-auto">
+          <p class="text-lg mb-2">Sessions Until Hatch</p>
+          <p class="text-5xl font-bold text-orange-600" id="sessionsRemaining">10</p>
+        </div>
+
+        <p class="text-gray-700 mb-4">Keep logging sessions to hatch your dragon!</p>
+        <a href="session.html" class="btn-primary inline-block">
+          Log a Session
+        </a>
+      </div>
+    </div>
+
+    <!-- Hatched Dragon State -->
+    <div id="hatchedState" class="hidden">
+      
+      <!-- Dragon Display -->
+      <div class="card-document text-center mb-8">
+        <div class="text-8xl mb-4">[DRAGON]</div>
+        <h2 class="text-3xl font-bold mb-2" id="dragonName">Ember</h2>
+        <p class="text-gray-600 mb-4">Level <span id="dragonLevel">1</span> Dragon Companion</p>
+        
+        <div class="grid grid-cols-3 gap-4 mt-6">
+          <div class="bg-red-50 p-4 rounded-lg">
+            <p class="text-sm text-gray-600">Happiness</p>
+            <p class="text-2xl font-bold text-red-600" id="happinessLevel">100%</p>
+          </div>
+          <div class="bg-orange-50 p-4 rounded-lg">
+            <p class="text-sm text-gray-600">Energy</p>
+            <p class="text-2xl font-bold text-orange-600" id="energyLevel">100%</p>
+          </div>
+          <div class="bg-yellow-50 p-4 rounded-lg">
+            <p class="text-sm text-gray-600">Bond</p>
+            <p class="text-2xl font-bold text-yellow-600" id="bondLevel">Strong</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Care Actions -->
+      <div class="card-document mb-8">
+        <h3 class="text-2xl font-bold mb-4">Care Actions</h3>
+        <p class="text-sm text-gray-600 mb-6">Interact with your dragon to strengthen your bond!</p>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <button class="p-6 bg-red-100 rounded-lg transition active:scale-98" onclick="careAction('feed')">
+            <p class="text-3xl mb-2">[FEED]</p>
+            <p class="font-semibold text-red-900">Feed Dragon</p>
+            <p class="text-sm text-red-700">Restore energy and happiness</p>
+          </button>
+          
+          <button class="p-6 bg-orange-100 rounded-lg transition active:scale-98" onclick="careAction('play')">
+            <p class="text-3xl mb-2">[PLAY]</p>
+            <p class="font-semibold text-orange-900">Play Together</p>
+            <p class="text-sm text-orange-700">Increase bond level</p>
+          </button>
+          
+          <button class="p-6 bg-yellow-100 rounded-lg transition active:scale-98" onclick="careAction('train')">
+            <p class="text-3xl mb-2">[TRAIN]</p>
+            <p class="font-semibold text-yellow-900">Training Session</p>
+            <p class="text-sm text-yellow-700">Gain experience toward next level</p>
+          </button>
+          
+          <button class="p-6 bg-purple-100 rounded-lg transition active:scale-98" onclick="careAction('rest')">
+            <p class="text-3xl mb-2">[REST]</p>
+            <p class="font-semibold text-purple-900">Let Dragon Rest</p>
+            <p class="text-sm text-purple-700">Restore energy faster</p>
+          </button>
+        </div>
+      </div>
+
+      <!-- Dragon Stats -->
+      <div class="card-document mb-8">
+        <h3 class="text-2xl font-bold mb-4">Companion Stats</h3>
+        
+        <div class="space-y-3">
+          <div>
+            <div class="flex justify-between mb-1">
+              <span class="text-sm font-semibold">Experience</span>
+              <span class="text-sm text-gray-600"><span id="expCurrent">0</span> / <span id="expRequired">100</span></span>
+            </div>
+            <div class="w-full bg-gray-200 rounded-full h-2">
+              <div id="expBar" class="bg-orange-600 h-2 rounded-full transition-all" style="width: 0%"></div>
+            </div>
+          </div>
+          
+          <div class="grid grid-cols-2 gap-4 mt-4">
+            <div class="bg-gray-50 p-3 rounded">
+              <p class="text-sm text-gray-600">Total Campaigns</p>
+              <p class="text-xl font-bold" id="totalCampaigns">0</p>
+            </div>
+            <div class="bg-gray-50 p-3 rounded">
+              <p class="text-sm text-gray-600">Sessions Together</p>
+              <p class="text-xl font-bold" id="sessionsWithDragon">0</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Rename Dragon -->
+      <div class="card-document">
+        <h3 class="text-2xl font-bold mb-4">Manage Companion</h3>
+        
+        <div class="mb-4">
+          <label class="block font-semibold mb-2">Dragon Name</label>
+          <div class="flex gap-2">
+            <input type="text" id="newDragonName" placeholder="Enter new name..." 
+                   class="flex-1 px-4 py-2 rounded-lg border-2 border-gray-300" maxlength="10">
+            <button onclick="renameDragon()" class="btn-primary">
+              Update Name
+            </button>
+          </div>
+          <p class="text-sm text-gray-500 mt-1">Maximum 10 characters</p>
+        </div>
+      </div>
+
+    </div>
+
+  </main>
+
+  <script type="module">
+    import { auth, db } from './firebase-config.js';
+    import { onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
+    import { doc, getDoc, updateDoc } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
+
+    let currentUser = null;
+    let userData = null;
+
+    // Load dragon data
+    async function loadDragon() {
+      try {
+        const userRef = doc(db, 'users', currentUser.uid);
+        const userSnap = await getDoc(userRef);
+        
+        if (!userSnap.exists()) {
+          showState('noDragon');
+          return;
+        }
+        
+        userData = userSnap.data();
+        document.getElementById('userEmail').textContent = userData.email;
+        
+        // Show appropriate state
+        if (userData.eggStatus === 'none') {
+          showState('noDragon');
+        } else if (userData.eggStatus === 'incubating') {
+          showState('incubating');
+          document.getElementById('sessionsRemaining').textContent = userData.eggSessionsRemaining || 10;
+        } else if (userData.eggStatus === 'hatched') {
+          showState('hatched');
+          loadHatchedDragon();
+        }
+        
+      } catch (error) {
+        console.error('[DRAGON ERROR]', error);
+        alert('Error loading dragon. Please try again.');
+      }
+    }
+
+    function showState(state) {
+      document.getElementById('loadingState').classList.add('hidden');
+      document.getElementById('noDragonState').classList.add('hidden');
+      document.getElementById('incubatingState').classList.add('hidden');
+      document.getElementById('hatchedState').classList.add('hidden');
+      
+      if (state === 'noDragon') {
+        document.getElementById('noDragonState').classList.remove('hidden');
+      } else if (state === 'incubating') {
+        document.getElementById('incubatingState').classList.remove('hidden');
+      } else if (state === 'hatched') {
+        document.getElementById('hatchedState').classList.remove('hidden');
+      }
+    }
+
+    function loadHatchedDragon() {
+      document.getElementById('dragonName').textContent = userData.dragonName || 'Unnamed Dragon';
+      document.getElementById('dragonLevel').textContent = userData.dragonLevel || 1;
+      
+      // Simulated stats (you can expand this)
+      document.getElementById('happinessLevel').textContent = '100%';
+      document.getElementById('energyLevel').textContent = '100%';
+      document.getElementById('bondLevel').textContent = 'Strong';
+      
+      // Experience bar
+      const exp = 0;
+      const expRequired = 100;
+      document.getElementById('expCurrent').textContent = exp;
+      document.getElementById('expRequired').textContent = expRequired;
+      document.getElementById('expBar').style.width = '0%';
+      
+      // Stats
+      document.getElementById('totalCampaigns').textContent = '0';
+      document.getElementById('sessionsWithDragon').textContent = userData.lifetimeSessions || 0;
+      
+      // Pre-fill rename input
+      document.getElementById('newDragonName').value = userData.dragonName || '';
+    }
+
+    // Care actions
+    window.careAction = function(action) {
+      const messages = {
+        feed: 'Your dragon happily munches on some treats!',
+        play: 'You and your dragon play together. Your bond grows stronger!',
+        train: 'Training session complete! Your dragon gains experience.',
+        rest: 'Your dragon settles down for a nap.'
+      };
+      
+      alert(messages[action] || 'Action complete!');
+      
+      // In a full implementation, this would update Firestore
+      console.log('[DRAGON ACTION]', action);
+    };
+
+    // Rename dragon
+    window.renameDragon = async function() {
+      const newName = document.getElementById('newDragonName').value.trim();
+      
+      if (!newName) {
+        alert('Please enter a name for your dragon!');
+        return;
+      }
+      
+      if (newName.length > 10) {
+        alert('Dragon name must be 10 characters or less!');
+        return;
+      }
+      
+      try {
+        const userRef = doc(db, 'users', currentUser.uid);
+        await updateDoc(userRef, {
+          dragonName: newName
+        });
+        
+        document.getElementById('dragonName').textContent = newName;
+        alert('Dragon renamed successfully!');
+        
+      } catch (error) {
+        console.error('[RENAME ERROR]', error);
+        alert('Error renaming dragon. Please try again.');
+      }
+    };
+
+    // Auth check
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        currentUser = user;
+        loadDragon();
+      } else {
+        window.location.href = 'auth.html';
+      }
+    });
+  </script>
+
+</body>
+</html>

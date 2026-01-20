@@ -1,5 +1,6 @@
 import { auth, db } from './firebase-config.js';
 import { onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
+import { generateUserSave } from './user-save.js';
 import { 
   doc, 
   getDoc,
@@ -153,14 +154,14 @@ function createCampaignCard(id, campaign) {
   card.href = 'campaign.html?id=' + id;
   card.className = 'card-document';
   
-  const iconMap = {
-    'Fantasy': '⚔️',
-    'Sci-Fi': '🚀',
-    'Cyberpunk': '⚡',
-    'Horror': '👻',
-    'Cozy': '🍃',
-    'Custom': '🎲'
-  };
+const iconMap = {
+  'Fantasy': '[SWORD]',
+  'Sci-Fi': '[ROCKET]',
+  'Cyberpunk': '[BOLT]',
+  'Horror': '[GHOST]',
+  'Cozy': '[LEAF]',
+  'Custom': '[DICE]'
+};
   
   const icon = iconMap[campaign.system] || '🎲';
   
@@ -215,6 +216,40 @@ if (logoutBtn) {
 } else {
   console.error('[ERROR] Logout button not found in DOM');
 }
+
+// Generate USER_SAVE button
+document.getElementById('generateUserSaveBtn').addEventListener('click', async () => {
+  const btn = document.getElementById('generateUserSaveBtn');
+  const originalText = btn.textContent;
+  
+  try {
+    btn.disabled = true;
+    btn.textContent = 'Generating...';
+    
+    const saveData = await generateUserSave(currentUser.uid);
+    
+    // Download as text file
+    const blob = new Blob([saveData.base64], { type: 'text/plain' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `nexus-user-save-${Date.now()}.txt`;
+    a.click();
+    URL.revokeObjectURL(url);
+    
+    btn.textContent = 'Downloaded!';
+    setTimeout(() => {
+      btn.textContent = originalText;
+      btn.disabled = false;
+    }, 2000);
+    
+  } catch (error) {
+    console.error('[USER_SAVE ERROR]', error);
+    alert('Error generating USER_SAVE. Please try again.');
+    btn.textContent = originalText;
+    btn.disabled = false;
+  }
+});
 
 // Create Campaign Modal
 const createBtn = document.getElementById('createCampaignBtn');

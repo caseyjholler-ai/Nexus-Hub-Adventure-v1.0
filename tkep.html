@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TKEP - Tacit Knowledge Extraction Protocol</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body class="bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900 min-h-screen">
+
+  <header class="bg-slate-900/80 backdrop-blur-sm border-b border-blue-500/30 sticky top-0 z-50">
+    <div class="container mx-auto px-4 py-4 flex justify-between items-center">
+      <div class="flex items-center gap-3">
+        <a href="dashboard.html" class="text-blue-400 hover:text-blue-300 transition">&larr; Back</a>
+        <div class="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg flex items-center justify-center text-white font-bold text-xl">T</div>
+        <h1 class="text-2xl font-bold text-blue-400">TKEP Documentation</h1>
+      </div>
+      
+      <div class="flex items-center gap-4">
+        <a href="dashboard.html" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition active:scale-98">
+          Dashboard
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <main class="container mx-auto px-4 py-8 max-w-4xl">
+    
+    <div class="card-document mb-8">
+      <h2 class="text-4xl font-bold mb-4">Tacit Knowledge Extraction Protocol</h2>
+      <p class="text-xl text-gray-700 mb-4">A Structured System for Converting Expert Knowledge into Trainable AI Learning Units</p>
+      <p class="text-sm text-gray-500">Designed by Casey Holler | December 2025</p>
+    </div>
+
+    <div class="card-document mb-8">
+      <h3 class="text-2xl font-bold mb-4">Overview</h3>
+      <p class="mb-4">
+        The Tacit Knowledge Extraction Protocol (TKEP) is a structured methodology for extracting implicit expert knowledge into trainable, bankable learning units. Designed to address the expert bottleneck in ML training data generation, TKEP enables efficient knowledge transfer through time-boxed sessions with human-in-the-loop validation.
+      </p>
+    </div>
+
+    <div class="card-document mb-8">
+      <h3 class="text-2xl font-bold mb-4">Problem Statement</h3>
+      <p class="mb-4">Expert knowledge is time-constrained and often implicit:</p>
+      <ul class="list-disc pl-6 space-y-2 mb-4">
+        <li>Experts struggle to articulate intuitions that have become automatic</li>
+        <li>Traditional documentation assumes shared context that novices lack</li>
+        <li>Q&A sessions are inefficient (novice doesn't know what to ask)</li>
+        <li>Expert time is expensive and scarce at scale</li>
+      </ul>
+      <p class="font-bold">The bottleneck: How to extract maximum value from minimal expert time while maintaining accuracy and usability of captured knowledge.</p>
+    </div>
+
+    <div class="card-document mb-8">
+      <h3 class="text-2xl font-bold mb-6">The Five-Phase Extraction Cycle</h3>
+      
+      <div class="mb-6 p-4 bg-blue-50 rounded-lg">
+        <h4 class="text-xl font-bold mb-2">Phase 1: FRAME (1-2 minutes)</h4>
+        <p class="mb-2"><strong>Purpose:</strong> Establish shared context and identify vocabulary gaps</p>
+        <p class="mb-2"><strong>Process:</strong></p>
+        <ul class="list-disc pl-6 mb-2">
+          <li>Expert names one concept to explain (in their own terminology)</li>
+          <li>Learner/interviewer states what they're trying to understand</li>
+          <li>Protocol identifies gap between framings</li>
+          <li>Gap becomes the extraction focus</li>
+        </ul>
+        <p><strong>Output:</strong> Topic captured in both vocabularies, with bridge points identified</p>
+      </div>
+
+      <div class="mb-6 p-4 bg-green-50 rounded-lg">
+        <h4 class="text-xl font-bold mb-2">Phase 2: EXTRACT (3-5 minutes)</h4>
+        <p class="mb-2"><strong>Purpose:</strong> Surface tacit knowledge through structured questioning</p>
+        <p class="mb-2"><strong>Extraction Question Categories:</strong></p>
+        <ul class="list-disc pl-6 mb-2">
+          <li>Process Questions: "What's the FIRST thing you check?"</li>
+          <li>Decision Questions: "How do you choose between approach A vs. B?"</li>
+          <li>Translation Questions: "What analogy would you use for a 12-year-old?"</li>
+          <li>Edge Case Questions: "When does the normal approach NOT work?"</li>
+          <li>Meta Questions: "What do you wish someone had told you?"</li>
+        </ul>
+        <p><strong>Output:</strong> Raw expert knowledge with explicit tacit components identified</p>
+      </div>
+
+      <div class="mb-6 p-4 bg-purple-50 rounded-lg">
+        <h4 class="text-xl font-bold mb-2">Phase 3: TRANSLATE (2-3 minutes)</h4>
+        <p class="mb-2"><strong>Purpose:</strong> Human-in-the-loop validation through paraphrasing</p>
+        <p class="mb-2"><strong>Process:</strong></p>
+        <ul class="list-disc pl-6 mb-2">
+          <li>Learner/interviewer paraphrases expert's explanation in own words</li>
+          <li>Expert confirms accuracy or corrects misunderstanding</li>
+          <li>Cycle repeats until mutual understanding achieved</li>
+          <li>Mismatches reveal hidden assumptions or unclear language</li>
+        </ul>
+        <p><strong>Critical Function:</strong> This is the validation layer preventing knowledge corruption</p>
+      </div>
+
+      <div class="mb-6 p-4 bg-yellow-50 rounded-lg">
+        <h4 class="text-xl font-bold mb-2">Phase 4: CHUNK (1-2 minutes)</h4>
+        <p class="mb-2"><strong>Purpose:</strong> Package knowledge into discrete, reusable learning units</p>
+        <p class="mb-2"><strong>Standardized Chunk Format:</strong></p>
+        <ul class="list-disc pl-6 mb-2">
+          <li>Chunk ID (for tracking/linking)</li>
+          <li>Core Concept (one clear sentence)</li>
+          <li>Concrete Example (real-world illustration)</li>
+          <li>Prerequisites (what learner needs first)</li>
+          <li>Common Misconception (preventive wisdom)</li>
+          <li>Practice Prompt (verification test)</li>
+          <li>Time to Learn (realistic estimate)</li>
+          <li>Connections (links to related chunks)</li>
+        </ul>
+      </div>
+
+      <div class="mb-6 p-4 bg-red-50 rounded-lg">
+        <h4 class="text-xl font-bold mb-2">Phase 5: BANK (30 seconds)</h4>
+        <p class="mb-2"><strong>Purpose:</strong> Store chunks in searchable, refinable repository</p>
+        <p class="mb-2"><strong>Process:</strong></p>
+        <ul class="list-disc pl-6 mb-2">
+          <li>Save chunk with metadata (tags, timestamps, participant IDs)</li>
+          <li>Link to related chunks (builds knowledge graph)</li>
+          <li>Track access patterns (enables spaced repetition)</li>
+        </ul>
+        <p><strong>Output:</strong> Searchable knowledge bank that compounds over time</p>
+      </div>
+    </div>
+
+    <div class="card-document mb-8">
+      <h3 class="text-2xl font-bold mb-4">Key Design Principles</h3>
+      
+      <div class="space-y-4">
+        <div>
+          <h4 class="font-bold text-lg">TIME-BOXING (5-10 Minutes Per Session)</h4>
+          <p>Cognitive load constraint maximizes signal, minimizes expert fatigue</p>
+        </div>
+
+        <div>
+          <h4 class="font-bold text-lg">BIDIRECTIONAL LEARNING</h4>
+          <p>Expert learns what's unclear. Learner learns new concepts. Both improve through feedback loop.</p>
+        </div>
+
+        <div>
+          <h4 class="font-bold text-lg">ANTI-REWARD-HACKING PATTERNS</h4>
+          <p>Human-in-the-loop validation prevents knowledge corruption. No shortcuts possible.</p>
+        </div>
+
+        <div>
+          <h4 class="font-bold text-lg">PROGRESSIVE DECOMPOSITION</h4>
+          <p>Complex concepts become digestible through deliberate chunking</p>
+        </div>
+
+        <div>
+          <h4 class="font-bold text-lg">LIVING DOCUMENTATION</h4>
+          <p>Knowledge bank is searchable, refinable, and reusable</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="card-document mb-8">
+      <h3 class="text-2xl font-bold mb-4">Live Test Results</h3>
+      
+      <div class="grid grid-cols-2 gap-4 mb-4">
+        <div class="bg-blue-50 p-4 rounded-lg">
+          <p class="text-sm text-gray-600">Session Duration</p>
+          <p class="text-2xl font-bold">13 minutes</p>
+        </div>
+        <div class="bg-blue-50 p-4 rounded-lg">
+          <p class="text-sm text-gray-600">Knowledge Units Extracted</p>
+          <p class="text-2xl font-bold">7 chunks</p>
+        </div>
+        <div class="bg-blue-50 p-4 rounded-lg">
+          <p class="text-sm text-gray-600">Curriculum Generated</p>
+          <p class="text-2xl font-bold">55 minutes</p>
+        </div>
+        <div class="bg-blue-50 p-4 rounded-lg">
+          <p class="text-sm text-gray-600">Efficiency Multiplier</p>
+          <p class="text-2xl font-bold text-green-600">7.8x</p>
+        </div>
+      </div>
+
+      <p class="font-bold mb-2">Validation Errors: 0</p>
+      <p class="text-sm text-gray-600">All paraphrases confirmed accurate on first attempt</p>
+    </div>
+
+    <div class="text-center">
+      <a href="dashboard.html" class="btn-primary inline-block">
+        Back to Dashboard
+      </a>
+    </div>
+
+  </main>
+
+  <footer class="container mx-auto px-4 py-8 text-center text-gray-400">
+    <p class="mb-2">TKEP - Tacit Knowledge Extraction Protocol</p>
+    <p class="text-sm">Created by Casey Holler | @VelvetBroadcast</p>
+  </footer>
+
+</body>
+</html>
