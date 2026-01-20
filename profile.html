@@ -5,43 +5,202 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Nexus Hub - Profile</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .profile-badge {
+      background: linear-gradient(135deg, #F59E0B 0%, #EA580C 100%);
+      color: white;
+      padding: 0.5rem 1rem;
+      border-radius: 20px;
+      font-weight: bold;
+      font-size: 0.875rem;
+      display: inline-block;
+    }
+    
+    .stat-card {
+      background: linear-gradient(135deg, #FAF5EB 0%, #FFF8F0 100%);
+      border: 2px solid rgba(245, 158, 11, 0.3);
+      border-radius: 12px;
+      padding: 1.5rem;
+      text-align: center;
+      transition: all 0.3s ease;
+    }
+    
+    .stat-card:hover {
+      border-color: #F59E0B;
+      transform: translateY(-4px);
+      box-shadow: 0 8px 24px rgba(245, 158, 11, 0.2);
+    }
+    
+    .share-button {
+      background: linear-gradient(135deg, #3B82F6 0%, #2563EB 100%);
+      color: white;
+      padding: 0.75rem 1.5rem;
+      border-radius: 8px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      border: none;
+    }
+    
+    .share-button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(59, 130, 246, 0.4);
+    }
+  </style>
 </head>
-<body class="bg-gradient-to-br from-amber-900 via-orange-800 to-red-900 min-h-screen p-4">
-  
-  <div class="max-w-2xl mx-auto bg-amber-50 rounded-lg shadow-2xl p-8">
-    
-    <h1 class="text-4xl font-bold text-amber-900 text-center mb-8">🐉 Your Dragon Profile</h1>
-    
-    <div id="profileData" class="space-y-4">
-      <div class="bg-amber-100 p-4 rounded-lg">
-        <p class="text-sm text-amber-700">Email:</p>
-        <p id="profileEmail" class="text-xl font-bold text-amber-900">Loading...</p>
+<body class="bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 min-h-screen">
+
+  <header class="bg-slate-900/80 backdrop-blur-sm border-b border-purple-500/30 sticky top-0 z-50">
+    <div class="container mx-auto px-4 py-4 flex justify-between items-center">
+      <div class="flex items-center gap-3">
+        <a href="dashboard.html" class="text-purple-400 hover:text-purple-300 transition">&larr; Back</a>
+        <div class="w-10 h-10 bg-gradient-to-br from-purple-500 to-pink-600 rounded-lg flex items-center justify-center text-white font-bold text-xl">P</div>
+        <h1 class="text-2xl font-bold text-purple-400">Public Profile</h1>
       </div>
+    </div>
+  </header>
+
+  <main class="container mx-auto px-4 py-8 max-w-4xl">
+    
+    <!-- Loading State -->
+    <div id="loadingState" class="text-center py-12">
+      <div class="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-purple-400"></div>
+      <p class="text-purple-300 mt-4">Loading profile...</p>
+    </div>
+
+    <!-- Profile Content -->
+    <div id="profileData" class="hidden">
       
-      <div class="bg-blue-100 p-4 rounded-lg border-2 border-blue-500">
-        <p class="text-sm text-blue-700 font-semibold">Portal Hash (NFC ID)</p>
-        <p id="profileHash" class="text-lg font-mono font-bold text-blue-900 break-all">Loading...</p>
+      <!-- Profile Header -->
+      <div class="card-document mb-8">
+        <div class="flex justify-between items-start mb-6">
+          <div>
+            <div class="profile-badge mb-3">🔥 NEXUS HUB ADVENTURER</div>
+            <h2 id="profileEmail" class="text-3xl font-bold mb-2">Loading...</h2>
+            <p class="text-sm text-gray-600">
+              Portal ID: <span id="profileHash" class="font-mono font-bold text-purple-600">...</span>
+            </p>
+          </div>
+          <button onclick="shareProfile()" class="share-button">
+            📱 Share Profile
+          </button>
+        </div>
       </div>
-      
-      <div class="grid grid-cols-2 gap-4">
-        <div class="bg-amber-100 p-4 rounded-lg">
-          <p class="text-sm text-amber-700">Care Balance</p>
-          <p id="profileCare" class="text-2xl font-bold text-amber-900">0</p>
+
+      <!-- Stats Grid -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+        
+        <!-- CARE Balance -->
+        <div class="stat-card">
+          <p class="text-sm text-gray-600 mb-2">CARE Balance</p>
+          <p id="profileCare" class="text-4xl font-bold text-emerald-600">0</p>
+          <p class="text-xs text-gray-500 mt-2">Total earned currency</p>
         </div>
         
-        <div class="bg-amber-100 p-4 rounded-lg">
-          <p class="text-sm text-amber-700">Dragon</p>
-          <p id="profileDragon" class="text-2xl font-bold text-amber-900">🥚 Egg</p>
+        <!-- Dragon Status -->
+        <div class="stat-card">
+          <p class="text-sm text-gray-600 mb-2">Dragon Companion</p>
+          <p id="profileDragon" class="text-2xl font-bold">🥚 Egg</p>
+          <p class="text-xs text-gray-500 mt-2" id="dragonSubtext">Status</p>
+        </div>
+        
+        <!-- Campaigns -->
+        <div class="stat-card">
+          <p class="text-sm text-gray-600 mb-2">Active Campaigns</p>
+          <p id="profileCampaigns" class="text-4xl font-bold text-blue-600">0</p>
+          <p class="text-xs text-gray-500 mt-2">Ongoing adventures</p>
+        </div>
+        
+      </div>
+
+      <!-- Achievement Badges -->
+      <div class="card-document mb-8">
+        <h3 class="text-2xl font-bold mb-4">🏆 Achievements</h3>
+        <div id="achievementsList" class="flex flex-wrap gap-3">
+          <!-- Achievements inserted here -->
         </div>
       </div>
+
+      <!-- Recent Activity -->
+      <div class="card-document">
+        <h3 class="text-2xl font-bold mb-4">📊 Activity</h3>
+        <div class="space-y-3">
+          <div class="flex justify-between items-center p-3 bg-gray-50 rounded">
+            <span class="text-sm font-semibold">Total Sessions</span>
+            <span id="totalSessions" class="text-lg font-bold text-purple-600">0</span>
+          </div>
+          <div class="flex justify-between items-center p-3 bg-gray-50 rounded">
+            <span class="text-sm font-semibold">Lifetime Actions</span>
+            <span id="lifetimeActions" class="text-lg font-bold text-purple-600">0</span>
+          </div>
+          <div class="flex justify-between items-center p-3 bg-gray-50 rounded">
+            <span class="text-sm font-semibold">Member Since</span>
+            <span id="memberSince" class="text-lg font-bold text-purple-600">...</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Footer Actions -->
+      <div class="flex gap-4 mt-8 justify-center">
+        <button id="backBtn" class="btn-secondary">
+          Back to Dashboard
+        </button>
+        <button onclick="copyProfileLink()" class="btn-primary">
+          Copy Profile Link
+        </button>
+      </div>
       
-      <button id="backBtn" class="w-full bg-amber-600 text-white py-3 rounded-lg font-bold hover:bg-amber-700 transition">
-        Back to Dashboard
-      </button>
     </div>
-  </div>
+
+  </main>
+
+  <footer class="container mx-auto px-4 py-8 text-center text-gray-400">
+    <p class="text-sm">Nexus Hub v1.0 | Created by Casey Holler</p>
+    <p class="text-xs mt-1">Profile system developed with Claude (Anthropic)</p>
+  </footer>
 
   <script type="module" src="profile.js"></script>
   
+  <script>
+    // Share profile function
+    window.shareProfile = async function() {
+      const url = window.location.href;
+      
+      if (navigator.share) {
+        try {
+          await navigator.share({
+            title: 'My Nexus Hub Profile',
+            text: 'Check out my Nexus Hub adventurer profile!',
+            url: url
+          });
+        } catch (err) {
+          if (err.name !== 'AbortError') {
+            copyProfileLink();
+          }
+        }
+      } else {
+        copyProfileLink();
+      }
+    };
+    
+    // Copy profile link
+    window.copyProfileLink = function() {
+      const url = window.location.href;
+      navigator.clipboard.writeText(url);
+      
+      // Show feedback
+      const btn = event.target;
+      const originalText = btn.textContent;
+      btn.textContent = '✓ Copied!';
+      btn.style.background = 'linear-gradient(135deg, #10B981 0%, #059669 100%)';
+      
+      setTimeout(() => {
+        btn.textContent = originalText;
+        btn.style.background = '';
+      }, 2000);
+    };
+  </script>
+
 </body>
 </html>

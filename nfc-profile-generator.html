@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Nexus Profile & CARE Token Generator</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body {
+      background: linear-gradient(135deg, #0a0e14 0%, #1f2937 100%);
+      min-height: 100vh;
+      color: #e5e7eb;
+      font-family: 'Courier New', monospace;
+    }
+    
+    .card {
+      background: linear-gradient(135deg, #1f2937 0%, #374151 100%);
+      border: 2px solid #4b5563;
+      border-radius: 12px;
+      padding: 2rem;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+    }
+    
+    .btn {
+      padding: 1rem 2rem;
+      border-radius: 8px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: all 0.2s;
+      border: none;
+      font-size: 1rem;
+      font-family: 'Courier New', monospace;
+    }
+    
+    .btn-primary {
+      background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+      color: white;
+    }
+    
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4);
+    }
+    
+    .btn-secondary {
+      background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+      color: white;
+    }
+    
+    .btn-danger {
+      background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+      color: white;
+    }
+    
+    .status-indicator {
+      display: inline-block;
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      margin-right: 8px;
+    }
+    
+    .status-ready { background: #10b981; }
+    .status-error { background: #ef4444; }
+    .status-pending { background: #f59e0b; }
+    
+    .code-block {
+      background: #0a0e14;
+      padding: 1rem;
+      border-radius: 8px;
+      font-family: 'Courier New', monospace;
+      font-size: 0.875rem;
+      overflow-x: auto;
+      white-space: pre-wrap;
+      word-break: break-all;
+      color: #00ff88;
+    }
+    
+    input, select, textarea {
+      background: #374151;
+      border: 2px solid #4b5563;
+      color: #e5e7eb;
+      padding: 0.75rem;
+      border-radius: 8px;
+      width: 100%;
+      font-family: 'Courier New', monospace;
+    }
+    
+    input:focus, select:focus, textarea:focus {
+      outline: none;
+      border-color: #10b981;
+    }
+    
+    label {
+      display: block;
+      margin-bottom: 0.5rem;
+      font-weight: bold;
+      color: #00ff88;
+    }
+    
+    .qr-container {
+      display: flex;
+      justify-content: center;
+      padding: 2rem;
+      background: white;
+      border-radius: 12px;
+      margin: 1rem 0;
+    }
+  </style>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+</head>
+<body class="p-4">
+
+  <div class="max-w-4xl mx-auto">
+    
+    <!-- Header -->
+    <div class="text-center mb-8">
+      <h1 class="text-4xl font-bold mb-2" style="color: #00ff88;">NEXUS PROFILE & CARE TOKEN GENERATOR</h1>
+      <p class="text-gray-400">Secure Profile Links & Self-Care Action Tokens</p>
+      <p class="text-sm text-gray-500 mt-2">No physical NFC card required • Share digitally or print QR codes</p>
+    </div>
+
+    <!-- Tab Navigation -->
+    <div class="flex gap-2 mb-6">
+      <button class="btn btn-primary flex-1" onclick="showTab('profile')">PROFILE LINK</button>
+      <button class="btn btn-secondary flex-1" onclick="showTab('care')">CARE TOKEN</button>
+      <button class="btn btn-secondary flex-1" onclick="showTab('nfc')">NFC WRITE</button>
+    </div>
+
+    <!-- PROFILE LINK TAB -->
+    <div id="profileTab" class="card mb-6">
+      <h2 class="text-2xl font-bold mb-4">Generate Secure Profile Link</h2>
+      <p class="text-gray-400 mb-6">Create a shareable link to your public Nexus Hub profile. Anyone with this link can view your CARE balance, dragon status, and campaign achievements.</p>
+      
+      <form id="profileForm" class="space-y-4">
+        <div>
+          <label>User Email</label>
+          <input type="email" id="profileEmail" value="user@nexushub.com" required>
+        </div>
+
+        <div>
+          <label>User UID (from Firebase)</label>
+          <input type="text" id="profileUid" value="" placeholder="Paste your Firebase UID" required>
+        </div>
+
+        <button type="submit" class="btn btn-primary w-full">
+          Generate Profile Link
+        </button>
+      </form>
+
+      <!-- Profile Output -->
+      <div id="profileOutput" class="mt-6 hidden">
+        <h3 class="text-xl font-bold mb-3">Your Profile Link</h3>
+        
+        <div class="mb-4">
+          <label>Portal Hash (ID)</label>
+          <div class="code-block" id="portalHash"></div>
+        </div>
+
+        <div class="mb-4">
+          <label>Full Profile URL</label>
+          <div class="code-block" id="profileUrl"></div>
+          <button class="btn btn-secondary mt-2" onclick="copyProfileUrl()">Copy URL</button>
+        </div>
+
+        <div class="mb-4">
+          <label>QR Code (Scan to Visit Profile)</label>
+          <div id="profileQR" class="qr-container"></div>
+          <button class="btn btn-secondary" onclick="downloadQR('profileQR')">Download QR Code</button>
+        </div>
+
+        <div class="bg-blue-900/30 p-4 rounded-lg">
+          <p class="text-sm text-blue-300"><strong>📱 Share This Link:</strong></p>
+          <p class="text-sm text-gray-400 mt-2">Send this URL to friends, post on social media, or add to your email signature. Anyone can view your public stats!</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- CARE TOKEN TAB -->
+    <div id="careTab" class="card mb-6 hidden">
+      <h2 class="text-2xl font-bold mb-4">Generate CARE Action Token</h2>
+      <p class="text-gray-400 mb-6">Create a one-time-use token for logging self-care actions. Share with accountability partners or use for offline tracking.</p>
+      
+      <form id="careForm" class="space-y-4">
+        <div>
+          <label>User UID (from Firebase)</label>
+          <input type="text" id="careUid" value="" placeholder="Paste your Firebase UID" required>
+        </div>
+
+        <div>
+          <label>Action Type</label>
+          <select id="careAction" required>
+            <option value="self_care">General Self-Care</option>
+            <option value="meditation">Meditation</option>
+            <option value="exercise">Exercise</option>
+            <option value="journaling">Journaling</option>
+            <option value="social">Social Connection</option>
+            <option value="creative">Creative Time</option>
+            <option value="rest">Rest/Sleep</option>
+            <option value="nutrition">Healthy Meal</option>
+          </select>
+        </div>
+
+        <div>
+          <label>CARE Value (coins earned when redeemed)</label>
+          <input type="number" id="careValue" value="25" min="1" max="50">
+          <p class="text-xs text-gray-500 mt-1">Default: 25 CARE • Max: 50 CARE per action</p>
+        </div>
+
+        <div>
+          <label>Expiration (hours from now)</label>
+          <input type="number" id="careExpiry" value="24" min="1" max="168">
+          <p class="text-xs text-gray-500 mt-1">Tokens expire after this time to prevent hoarding</p>
+        </div>
+
+        <button type="submit" class="btn btn-primary w-full">
+          Generate CARE Token
+        </button>
+      </form>
+
+      <!-- CARE Output -->
+      <div id="careOutput" class="mt-6 hidden">
+        <h3 class="text-xl font-bold mb-3">Your CARE Action Token</h3>
+        
+        <div class="mb-4">
+          <label>Token Code</label>
+          <div class="code-block" id="careToken"></div>
+        </div>
+
+        <div class="mb-4">
+          <label>Redemption URL</label>
+          <div class="code-block" id="careUrl"></div>
+          <button class="btn btn-secondary mt-2" onclick="copyCareUrl()">Copy URL</button>
+        </div>
+
+        <div class="mb-4">
+          <label>QR Code (Scan to Redeem)</label>
+          <div id="careQR" class="qr-container"></div>
+          <button class="btn btn-secondary" onclick="downloadQR('careQR')">Download QR Code</button>
+        </div>
+
+        <div class="bg-emerald-900/30 p-4 rounded-lg">
+          <p class="text-sm text-emerald-300"><strong>✨ How It Works:</strong></p>
+          <ul class="text-sm text-gray-400 mt-2 space-y-1">
+            <li>• Token is valid for <span id="expiryDisplay"></span> hours</li>
+            <li>• Can only be redeemed once</li>
+            <li>• Awards <span id="valueDisplay"></span> CARE when scanned</li>
+            <li>• Logged in your activity history</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- NFC WRITE TAB (OPTIONAL) -->
+    <div id="nfcTab" class="card mb-6 hidden">
+      <h2 class="text-2xl font-bold mb-4">Write to Physical NFC Card</h2>
+      <p class="text-gray-400 mb-6">Optional: Write your profile link or CARE token to a physical NFC card for tap-to-share functionality.</p>
+      
+      <div class="bg-yellow-900/30 p-4 rounded-lg mb-6">
+        <p class="text-sm text-yellow-300"><strong>⚠️ Requirements:</strong></p>
+        <ul class="text-sm text-gray-400 mt-2 space-y-1">
+          <li>• Chrome on Android (Web NFC API)</li>
+          <li>• NTAG 213/215/216 NFC card</li>
+          <li>• Enable chrome://flags/#enable-experimental-web-platform-features</li>
+        </ul>
+      </div>
+
+      <div id="nfcStatus" class="mb-6">
+        <span class="status-indicator status-error"></span>
+        <span>Checking NFC support...</span>
+      </div>
+
+      <div class="space-y-4">
+        <div>
+          <label>Data to Write</label>
+          <select id="nfcDataType">
+            <option value="profile">Profile Link</option>
+            <option value="care">CARE Token</option>
+          </select>
+        </div>
+
+        <button onclick="writeToNFC()" class="btn btn-primary w-full" id="writeNFCBtn" disabled>
+          Write to NFC Card
+        </button>
+
+        <div id="nfcResult" class="hidden mt-4 p-4 bg-green-900/30 rounded-lg">
+          <p class="text-green-300 font-bold">✓ Successfully written to NFC card!</p>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <script type="module">
+    // Simple hash generator (matches dashboard.js)
+    function makeHash(email, uid) {
+      return (uid.substring(0, 8) + email.substring(0, 4)).toLowerCase();
+    }
+
+    // Generate cryptographically strong token for CARE actions
+    function generateCareToken() {
+      const array = new Uint8Array(16);
+      crypto.getRandomValues(array);
+      return Array.from(array, byte => byte.toString(16).padStart(2, '0')).join('');
+    }
+
+    // Tab switching
+    window.showTab = function(tab) {
+      document.getElementById('profileTab').classList.add('hidden');
+      document.getElementById('careTab').classList.add('hidden');
+      document.getElementById('nfcTab').classList.add('hidden');
+      document.getElementById(tab + 'Tab').classList.remove('hidden');
+    };
+
+    // Check NFC support
+    function checkNFCSupport() {
+      const statusEl = document.querySelector('#nfcStatus span:last-child');
+      const indicator = document.querySelector('#nfcStatus .status-indicator');
+      const writeBtn = document.getElementById('writeNFCBtn');
+
+      if ('NDEFReader' in window) {
+        indicator.className = 'status-indicator status-ready';
+        statusEl.textContent = 'NFC Supported ✓';
+        writeBtn.disabled = false;
+      } else {
+        indicator.className = 'status-indicator status-error';
+        statusEl.textContent = 'NFC Not Supported (use QR codes instead)';
+      }
+    }
+
+    checkNFCSupport();
+
+    // Profile Form Submit
+    document.getElementById('profileForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+
+      const email = document.getElementById('profileEmail').value;
+      const uid = document.getElementById('profileUid').value;
+      
+      const hash = makeHash(email, uid);
+      const baseUrl = 'https://nexushubadventure.com'; // Update with your actual domain
+      const profileUrl = `${baseUrl}/profile.html?id=${hash}`;
+
+      // Display results
+      document.getElementById('portalHash').textContent = hash;
+      document.getElementById('profileUrl').textContent = profileUrl;
+
+      // Generate QR code
+      const qrContainer = document.getElementById('profileQR');
+      qrContainer.innerHTML = '';
+      new QRCode(qrContainer, {
+        text: profileUrl,
+        width: 256,
+        height: 256,
+        colorDark: "#000000",
+        colorLight: "#ffffff",
+      });
+
+      // Store for NFC writing
+      window.currentProfileUrl = profileUrl;
+
+      document.getElementById('profileOutput').classList.remove('hidden');
+    });
+
+    // CARE Form Submit
+    document.getElementById('careForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+
+      const uid = document.getElementById('careUid').value;
+      const action = document.getElementById('careAction').value;
+      const value = parseInt(document.getElementById('careValue').value);
+      const expiry = parseInt(document.getElementById('careExpiry').value);
+
+      const token = generateCareToken();
+      const expiryTime = Date.now() + (expiry * 60 * 60 * 1000);
+      
+      // Create redemption URL (this would link to a redeem.html page you create)
+      const baseUrl = 'https://nexushubadventure.com'; // Update with your actual domain
+      const careUrl = `${baseUrl}/redeem.html?token=${token}&uid=${uid}&action=${action}&value=${value}&expiry=${expiryTime}`;
+
+      // Display results
+      document.getElementById('careToken').textContent = token;
+      document.getElementById('careUrl').textContent = careUrl;
+      document.getElementById('expiryDisplay').textContent = expiry;
+      document.getElementById('valueDisplay').textContent = value;
+
+      // Generate QR code
+      const qrContainer = document.getElementById('careQR');
+      qrContainer.innerHTML = '';
+      new QRCode(qrContainer, {
+        text: careUrl,
+        width: 256,
+        height: 256,
+        colorDark: "#000000",
+        colorLight: "#ffffff",
+      });
+
+      // Store for NFC writing
+      window.currentCareUrl = careUrl;
+
+      // In a real implementation, you'd save this token to Firestore with:
+      // - token ID
+      // - user UID
+      // - action type
+      // - CARE value
+      // - expiry timestamp
+      // - redeemed: false
+
+      document.getElementById('careOutput').classList.remove('hidden');
+    });
+
+    // Copy functions
+    window.copyProfileUrl = function() {
+      const url = document.getElementById('profileUrl').textContent;
+      navigator.clipboard.writeText(url);
+      alert('Profile URL copied to clipboard!');
+    };
+
+    window.copyCareUrl = function() {
+      const url = document.getElementById('careUrl').textContent;
+      navigator.clipboard.writeText(url);
+      alert('CARE token URL copied to clipboard!');
+    };
+
+    // Download QR code
+    window.downloadQR = function(containerId) {
+      const canvas = document.querySelector(`#${containerId} canvas`);
+      const url = canvas.toDataURL('image/png');
+      const link = document.createElement('a');
+      link.download = `nexus-${containerId}.png`;
+      link.href = url;
+      link.click();
+    };
+
+    // Write to NFC
+    window.writeToNFC = async function() {
+      if (!('NDEFReader' in window)) {
+        alert('NFC not supported on this device/browser');
+        return;
+      }
+
+      const dataType = document.getElementById('nfcDataType').value;
+      const dataUrl = dataType === 'profile' ? window.currentProfileUrl : window.currentCareUrl;
+
+      if (!dataUrl) {
+        alert('Generate a profile link or CARE token first!');
+        return;
+      }
+
+      try {
+        const ndef = new NDEFReader();
+        await ndef.write({
+          records: [{
+            recordType: "url",
+            data: dataUrl
+          }]
+        });
+
+        document.getElementById('nfcResult').classList.remove('hidden');
+        setTimeout(() => {
+          document.getElementById('nfcResult').classList.add('hidden');
+        }, 3000);
+
+      } catch (error) {
+        alert('NFC write error: ' + error.message);
+        console.error(error);
+      }
+    };
+  </script>
+
+</body>
+</html>

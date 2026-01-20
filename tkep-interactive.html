@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TKEP - Interactive Knowledge Extraction</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .phase-card {
+      transition: all 0.3s ease;
+      cursor: pointer;
+    }
+    
+    .phase-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+    }
+    
+    .timer-display {
+      font-size: 3rem;
+      font-weight: bold;
+      font-family: 'Courier New', monospace;
+    }
+    
+    .chunk-preview {
+      background: #f3f4f6;
+      padding: 1rem;
+      border-left: 4px solid #3b82f6;
+      border-radius: 4px;
+      margin: 0.5rem 0;
+    }
+    
+    .extraction-panel {
+      min-height: 200px;
+      background: white;
+      border-radius: 8px;
+      padding: 1.5rem;
+    }
+  </style>
+</head>
+<body class="bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900 min-h-screen">
+
+  <header class="bg-slate-900/80 backdrop-blur-sm border-b border-blue-500/30 sticky top-0 z-50">
+    <div class="container mx-auto px-4 py-4 flex justify-between items-center">
+      <div class="flex items-center gap-3">
+        <a href="dashboard.html" class="text-blue-400 hover:text-blue-300 transition">&larr; Back</a>
+        <div class="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg flex items-center justify-center text-white font-bold text-xl">T</div>
+        <h1 class="text-2xl font-bold text-blue-400">TKEP Interactive</h1>
+      </div>
+      
+      <div class="flex items-center gap-4">
+        <span id="sessionCount" class="text-blue-300 text-sm">Sessions: 0</span>
+        <span id="chunkCount" class="text-purple-300 text-sm">Chunks: 0</span>
+      </div>
+    </div>
+  </header>
+
+  <main class="container mx-auto px-4 py-8 max-w-6xl">
+    
+    <!-- Mode Tabs -->
+    <div class="flex gap-2 mb-8">
+      <button onclick="showMode('docs')" id="docsTab" class="btn-primary px-6 py-3 rounded-lg">
+        📚 Documentation
+      </button>
+      <button onclick="showMode('extract')" id="extractTab" class="btn-secondary px-6 py-3 rounded-lg">
+        🎯 Live Extraction
+      </button>
+      <button onclick="showMode('library')" id="libraryTab" class="btn-secondary px-6 py-3 rounded-lg">
+        💾 Knowledge Library
+      </button>
+    </div>
+
+    <!-- DOCUMENTATION MODE -->
+    <div id="docsMode">
+      <div class="card-document mb-8">
+        <h2 class="text-4xl font-bold mb-4">Tacit Knowledge Extraction Protocol</h2>
+        <p class="text-xl text-gray-700 mb-4">A Structured System for Converting Expert Knowledge into Trainable AI Learning Units</p>
+        <p class="text-sm text-gray-500">Designed by Casey Holler | December 2024</p>
+      </div>
+
+      <div class="card-document mb-8">
+        <h3 class="text-2xl font-bold mb-4">Overview</h3>
+        <p class="mb-4">
+          The Tacit Knowledge Extraction Protocol (TKEP) is a structured methodology for extracting implicit expert knowledge into trainable, bankable learning units. Designed to address the expert bottleneck in ML training data generation, TKEP enables efficient knowledge transfer through time-boxed sessions with human-in-the-loop validation.
+        </p>
+        
+        <div class="bg-blue-50 p-6 rounded-lg">
+          <h4 class="font-bold text-lg mb-2">Proven Results</h4>
+          <div class="grid grid-cols-4 gap-4">
+            <div class="text-center">
+              <p class="text-3xl font-bold text-blue-600">13min</p>
+              <p class="text-sm text-gray-600">Session Time</p>
+            </div>
+            <div class="text-center">
+              <p class="text-3xl font-bold text-green-600">7</p>
+              <p class="text-sm text-gray-600">Knowledge Units</p>
+            </div>
+            <div class="text-center">
+              <p class="text-3xl font-bold text-purple-600">55min</p>
+              <p class="text-sm text-gray-600">Curriculum Gen</p>
+            </div>
+            <div class="text-center">
+              <p class="text-3xl font-bold text-emerald-600">7.8x</p>
+              <p class="text-sm text-gray-600">Efficiency</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
+        <!-- Phase Cards -->
+        <div class="phase-card bg-gradient-to-br from-blue-50 to-blue-100 p-6 rounded-lg">
+          <div class="text-3xl mb-2">1️⃣</div>
+          <h4 class="text-xl font-bold mb-2">FRAME</h4>
+          <p class="text-sm text-gray-700 mb-2">1-2 minutes</p>
+          <p class="text-sm">Establish shared context and identify vocabulary gaps</p>
+        </div>
+
+        <div class="phase-card bg-gradient-to-br from-green-50 to-green-100 p-6 rounded-lg">
+          <div class="text-3xl mb-2">2️⃣</div>
+          <h4 class="text-xl font-bold mb-2">EXTRACT</h4>
+          <p class="text-sm text-gray-700 mb-2">3-5 minutes</p>
+          <p class="text-sm">Surface tacit knowledge through structured questioning</p>
+        </div>
+
+        <div class="phase-card bg-gradient-to-br from-purple-50 to-purple-100 p-6 rounded-lg">
+          <div class="text-3xl mb-2">3️⃣</div>
+          <h4 class="text-xl font-bold mb-2">TRANSLATE</h4>
+          <p class="text-sm text-gray-700 mb-2">2-3 minutes</p>
+          <p class="text-sm">Human-in-the-loop validation through paraphrasing</p>
+        </div>
+
+        <div class="phase-card bg-gradient-to-br from-yellow-50 to-yellow-100 p-6 rounded-lg">
+          <div class="text-3xl mb-2">4️⃣</div>
+          <h4 class="text-xl font-bold mb-2">CHUNK</h4>
+          <p class="text-sm text-gray-700 mb-2">1-2 minutes</p>
+          <p class="text-sm">Package knowledge into discrete, reusable units</p>
+        </div>
+
+        <div class="phase-card bg-gradient-to-br from-red-50 to-red-100 p-6 rounded-lg">
+          <div class="text-3xl mb-2">5️⃣</div>
+          <h4 class="text-xl font-bold mb-2">BANK</h4>
+          <p class="text-sm text-gray-700 mb-2">30 seconds</p>
+          <p class="text-sm">Store in searchable, refinable repository</p>
+        </div>
+
+        <div class="phase-card bg-gradient-to-br from-gray-50 to-gray-100 p-6 rounded-lg">
+          <div class="text-3xl mb-2">🔁</div>
+          <h4 class="text-xl font-bold mb-2">REPEAT</h4>
+          <p class="text-sm text-gray-700 mb-2">5-10 min cycles</p>
+          <p class="text-sm">Time-boxed sessions maximize signal</p>
+        </div>
+      </div>
+
+      <div class="card-document">
+        <h3 class="text-2xl font-bold mb-4">Key Design Principles</h3>
+        <div class="space-y-4">
+          <div class="border-l-4 border-blue-500 pl-4">
+            <h4 class="font-bold text-lg">TIME-BOXING</h4>
+            <p class="text-gray-700">Cognitive load constraint maximizes signal, minimizes expert fatigue</p>
+          </div>
+          <div class="border-l-4 border-green-500 pl-4">
+            <h4 class="font-bold text-lg">BIDIRECTIONAL LEARNING</h4>
+            <p class="text-gray-700">Expert learns what's unclear. Learner learns concepts. Both improve through feedback.</p>
+          </div>
+          <div class="border-l-4 border-purple-500 pl-4">
+            <h4 class="font-bold text-lg">ANTI-REWARD-HACKING</h4>
+            <p class="text-gray-700">Human-in-the-loop validation prevents knowledge corruption</p>
+          </div>
+          <div class="border-l-4 border-yellow-500 pl-4">
+            <h4 class="font-bold text-lg">PROGRESSIVE DECOMPOSITION</h4>
+            <p class="text-gray-700">Complex concepts become digestible through deliberate chunking</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- EXTRACTION MODE -->
+    <div id="extractMode" class="hidden">
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
+        <!-- Session Timer -->
+        <div class="card-document text-center">
+          <h3 class="text-lg font-bold mb-2">Session Timer</h3>
+          <div class="timer-display text-blue-600" id="sessionTimer">00:00</div>
+          <div class="flex gap-2 mt-4">
+            <button onclick="startTimer()" class="btn-primary flex-1 py-2">Start</button>
+            <button onclick="pauseTimer()" class="btn-secondary flex-1 py-2">Pause</button>
+            <button onclick="resetTimer()" class="btn-secondary flex-1 py-2">Reset</button>
+          </div>
+        </div>
+
+        <!-- Current Phase -->
+        <div class="card-document text-center">
+          <h3 class="text-lg font-bold mb-2">Current Phase</h3>
+          <div id="currentPhase" class="text-5xl mb-2">1️⃣</div>
+          <div id="phaseName" class="text-2xl font-bold text-blue-600">FRAME</div>
+          <div id="phaseTime" class="text-sm text-gray-600 mt-2">Target: 1-2 minutes</div>
+        </div>
+
+        <!-- Session Stats -->
+        <div class="card-document">
+          <h3 class="text-lg font-bold mb-2">This Session</h3>
+          <div class="space-y-2">
+            <div class="flex justify-between">
+              <span class="text-gray-700">Concepts Framed:</span>
+              <span id="statFramed" class="font-bold">0</span>
+            </div>
+            <div class="flex justify-between">
+              <span class="text-gray-700">Knowledge Extracted:</span>
+              <span id="statExtracted" class="font-bold">0</span>
+            </div>
+            <div class="flex justify-between">
+              <span class="text-gray-700">Chunks Created:</span>
+              <span id="statChunked" class="font-bold">0</span>
+            </div>
+            <div class="flex justify-between">
+              <span class="text-gray-700">Efficiency:</span>
+              <span id="statEfficiency" class="font-bold text-green-600">--</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Phase Navigation -->
+      <div class="flex gap-2 mb-6">
+        <button onclick="setPhase(1)" class="btn-secondary flex-1 py-3">1: FRAME</button>
+        <button onclick="setPhase(2)" class="btn-secondary flex-1 py-3">2: EXTRACT</button>
+        <button onclick="setPhase(3)" class="btn-secondary flex-1 py-3">3: TRANSLATE</button>
+        <button onclick="setPhase(4)" class="btn-secondary flex-1 py-3">4: CHUNK</button>
+        <button onclick="setPhase(5)" class="btn-secondary flex-1 py-3">5: BANK</button>
+      </div>
+
+      <!-- Extraction Panel -->
+      <div class="card-document">
+        <h3 class="text-2xl font-bold mb-4" id="panelTitle">Phase 1: FRAME</h3>
+        
+        <div id="phaseContent" class="extraction-panel">
+          <!-- Dynamic content based on current phase -->
+        </div>
+
+        <div class="flex gap-4 mt-6">
+          <button onclick="prevPhase()" class="btn-secondary flex-1">← Previous</button>
+          <button onclick="nextPhase()" class="btn-primary flex-1">Next →</button>
+        </div>
+      </div>
+
+      <!-- Quick Notes -->
+      <div class="card-document mt-6">
+        <h3 class="text-xl font-bold mb-4">Quick Notes</h3>
+        <textarea id="sessionNotes" class="w-full p-4 border-2 border-gray-300 rounded-lg" rows="4" placeholder="Capture insights, observations, or follow-up questions..."></textarea>
+        <button onclick="saveNotes()" class="btn-secondary mt-2">Save Notes</button>
+      </div>
+    </div>
+
+    <!-- LIBRARY MODE -->
+    <div id="libraryMode" class="hidden">
+      <div class="card-document mb-6">
+        <div class="flex justify-between items-center mb-4">
+          <h2 class="text-2xl font-bold">Knowledge Chunks Library</h2>
+          <button onclick="exportLibrary()" class="btn-primary">Export All</button>
+        </div>
+        
+        <div class="flex gap-4 mb-6">
+          <input type="text" id="searchChunks" placeholder="Search chunks..." class="flex-1 px-4 py-2 border-2 border-gray-300 rounded-lg">
+          <select id="filterTags" class="px-4 py-2 border-2 border-gray-300 rounded-lg">
+            <option value="">All Tags</option>
+            <option value="technical">Technical</option>
+            <option value="process">Process</option>
+            <option value="mindset">Mindset</option>
+            <option value="tools">Tools</option>
+          </select>
+        </div>
+
+        <div id="chunksList" class="space-y-4">
+          <!-- Chunks will be populated here -->
+          <div class="text-center text-gray-500 py-8">
+            No knowledge chunks yet. Start an extraction session to create your first chunk!
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <script>
+    // Timer logic
+    let timerInterval = null;
+    let seconds = 0;
+    let isRunning = false;
+
+    function startTimer() {
+      if (!isRunning) {
+        isRunning = true;
+        timerInterval = setInterval(() => {
+          seconds++;
+          updateTimerDisplay();
+        }, 1000);
+      }
+    }
+
+    function pauseTimer() {
+      isRunning = false;
+      if (timerInterval) {
+        clearInterval(timerInterval);
+        timerInterval = null;
+      }
+    }
+
+    function resetTimer() {
+      pauseTimer();
+      seconds = 0;
+      updateTimerDisplay();
+    }
+
+    function updateTimerDisplay() {
+      const mins = Math.floor(seconds / 60);
+      const secs = seconds % 60;
+      document.getElementById('sessionTimer').textContent = 
+        `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+    }
+
+    // Phase management
+    let currentPhaseNum = 1;
+    const phases = [
+      { num: 1, name: 'FRAME', emoji: '1️⃣', time: '1-2 min', description: 'Establish context and identify gaps' },
+      { num: 2, name: 'EXTRACT', emoji: '2️⃣', time: '3-5 min', description: 'Surface tacit knowledge' },
+      { num: 3, name: 'TRANSLATE', emoji: '3️⃣', time: '2-3 min', description: 'Validate through paraphrasing' },
+      { num: 4, name: 'CHUNK', emoji: '4️⃣', time: '1-2 min', description: 'Package into learning units' },
+      { num: 5, name: 'BANK', emoji: '5️⃣', time: '30 sec', description: 'Store in repository' }
+    ];
+
+    function setPhase(num) {
+      currentPhaseNum = num;
+      const phase = phases[num - 1];
+      
+      document.getElementById('currentPhase').textContent = phase.emoji;
+      document.getElementById('phaseName').textContent = phase.name;
+      document.getElementById('phaseTime').textContent = `Target: ${phase.time}`;
+      document.getElementById('panelTitle').textContent = `Phase ${num}: ${phase.name}`;
+      
+      updatePhaseContent(num);
+    }
+
+    function updatePhaseContent(num) {
+      const panel = document.getElementById('phaseContent');
+      const contents = {
+        1: `<h4 class="font-bold mb-3">Frame the Concept</h4>
+            <label class="block mb-2">What concept are you explaining?</label>
+            <input type="text" class="w-full p-2 border rounded mb-4" placeholder="Enter concept name...">
+            <label class="block mb-2">What is the learner trying to understand?</label>
+            <textarea class="w-full p-2 border rounded" rows="3" placeholder="Describe the knowledge gap..."></textarea>`,
+        
+        2: `<h4 class="font-bold mb-3">Extract Knowledge</h4>
+            <p class="text-sm text-gray-600 mb-4">Use structured questions to surface tacit knowledge:</p>
+            <div class="space-y-2">
+              <button class="w-full text-left p-3 bg-blue-50 rounded hover:bg-blue-100" onclick="promptQuestion('process')">Process: "What's the FIRST thing you check?"</button>
+              <button class="w-full text-left p-3 bg-green-50 rounded hover:bg-green-100" onclick="promptQuestion('decision')">Decision: "How do you choose A vs B?"</button>
+              <button class="w-full text-left p-3 bg-purple-50 rounded hover:bg-purple-100" onclick="promptQuestion('analogy')">Analogy: "How would you explain to a 12-year-old?"</button>
+              <button class="w-full text-left p-3 bg-yellow-50 rounded hover:bg-yellow-100" onclick="promptQuestion('edge')">Edge Case: "When does the normal approach NOT work?"</button>
+            </div>
+            <textarea class="w-full p-2 border rounded mt-4" rows="4" placeholder="Capture expert response..."></textarea>`,
+        
+        3: `<h4 class="font-bold mb-3">Validate Understanding</h4>
+            <label class="block mb-2">Learner paraphrase (in your own words):</label>
+            <textarea class="w-full p-2 border rounded mb-4" rows="3" placeholder="Rephrase what you understood..."></textarea>
+            <label class="block mb-2">Expert correction/confirmation:</label>
+            <textarea class="w-full p-2 border rounded" rows="3" placeholder="Expert validates or corrects..."></textarea>
+            <div class="flex gap-2 mt-4">
+              <button class="btn-primary flex-1 py-2" onclick="markValidated()">✓ Validated</button>
+              <button class="btn-secondary flex-1 py-2" onclick="clarifyMore()">Need Clarification</button>
+            </div>`,
+        
+        4: `<h4 class="font-bold mb-3">Create Knowledge Chunk</h4>
+            <div class="space-y-3">
+              <div>
+                <label class="block text-sm font-semibold mb-1">Core Concept (one sentence):</label>
+                <input type="text" class="w-full p-2 border rounded" placeholder="The main idea...">
+              </div>
+              <div>
+                <label class="block text-sm font-semibold mb-1">Concrete Example:</label>
+                <textarea class="w-full p-2 border rounded" rows="2" placeholder="Real-world illustration..."></textarea>
+              </div>
+              <div>
+                <label class="block text-sm font-semibold mb-1">Prerequisites:</label>
+                <input type="text" class="w-full p-2 border rounded" placeholder="What learner needs first...">
+              </div>
+              <div>
+                <label class="block text-sm font-semibold mb-1">Common Misconception:</label>
+                <input type="text" class="w-full p-2 border rounded" placeholder="What people often get wrong...">
+              </div>
+            </div>`,
+        
+        5: `<h4 class="font-bold mb-3">Bank the Chunk</h4>
+            <div class="space-y-3">
+              <div>
+                <label class="block text-sm font-semibold mb-1">Tags (comma-separated):</label>
+                <input type="text" class="w-full p-2 border rounded" placeholder="technical, process, beginner...">
+              </div>
+              <div>
+                <label class="block text-sm font-semibold mb-1">Time to Learn (estimate):</label>
+                <input type="number" class="w-full p-2 border rounded" placeholder="15" min="1"> minutes
+              </div>
+              <button class="btn-primary w-full py-3 mt-4" onclick="saveChunk()">💾 Save to Library</button>
+            </div>`
+      };
+      
+      panel.innerHTML = contents[num];
+    }
+
+    function nextPhase() {
+      if (currentPhaseNum < 5) {
+        setPhase(currentPhaseNum + 1);
+      }
+    }
+
+    function prevPhase() {
+      if (currentPhaseNum > 1) {
+        setPhase(currentPhaseNum - 1);
+      }
+    }
+
+    // Mode switching
+    function showMode(mode) {
+      document.getElementById('docsMode').classList.add('hidden');
+      document.getElementById('extractMode').classList.add('hidden');
+      document.getElementById('libraryMode').classList.add('hidden');
+      
+      document.getElementById('docsTab').className = 'btn-secondary px-6 py-3 rounded-lg';
+      document.getElementById('extractTab').className = 'btn-secondary px-6 py-3 rounded-lg';
+      document.getElementById('libraryTab').className = 'btn-secondary px-6 py-3 rounded-lg';
+      
+      document.getElementById(`${mode}Mode`).classList.remove('hidden');
+      document.getElementById(`${mode}Tab`).className = 'btn-primary px-6 py-3 rounded-lg';
+    }
+
+    // Initialize
+    setPhase(1);
+  </script>
+
+</body>
+</html>
